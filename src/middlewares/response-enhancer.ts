@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 
-interface ApiResponse<T = any> {
+interface ApiResponse<T = unknown> {
   success: boolean;
   status: number;
   message: string;
@@ -11,7 +11,7 @@ const responseEnhancer = (req: Request, res: Response, next: NextFunction) => {
   res.success = function <T>(
     data: T,
     status: number = 200,
-    message: string = "Success",
+    message: string = 'Success',
   ) {
     const response: ApiResponse<T> = { success: true, status, message, data };
     this.status(status).json(response);

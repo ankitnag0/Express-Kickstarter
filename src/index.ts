@@ -1,19 +1,19 @@
-import express from "express";
-import responseEnhancer from "./middlewares/response-enhancer";
+import express from 'express';
+import responseEnhancer from './middlewares/response-enhancer';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(responseEnhancer);
 
-app.get("/", (req, res) => {
+app.get('/', (req, res) => {
   // res.send("Hello, World!");
   res.success(
     {
-      message: "what is up",
+      message: 'what is up',
     },
     200,
-    "fuck you mean",
+    'fuck you mean',
   );
 });
 

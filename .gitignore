@@ -25,10 +25,10 @@ pnpm-debug.log*
 Thumbs.db  
 ._*  
 
-# Package manager lock files (optional)  
-package-lock.json  
-yarn.lock  
-pnpm-lock.yaml  
+# # Package manager lock files (optional)  
+# package-lock.json  
+# yarn.lock  
+# pnpm-lock.yaml  
 
 # Testing & coverage  
 coverage/  
