@@ -7,7 +7,7 @@ import cookieParser from 'cookie-parser';
 import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss';
 import hpp from 'hpp';
-import csrf from 'csrf';
+// import csrf from 'csrf';
 import responseEnhancer from './middlewares/response-enhancer';
 import errorHandler from './middlewares/error-handler';
 import { env } from './config/env';
@@ -61,16 +61,16 @@ function sanitizeRequestBody(body: SanitizedBody): SanitizedBody {
 app.use(hpp()); // Prevent HTTP Parameter Pollution
 
 // CSRF Protection
-const tokens = new csrf();
-app.use((req, res, next) => {
-  const token = req.headers['x-csrf-token'] || req.body._csrf;
-  if (!token || !tokens.verify('your-secret-key', token)) {
-    return res
-      .status(403)
-      .json({ success: false, message: 'Invalid CSRF token' });
-  }
-  next();
-});
+// const tokens = new csrf();
+// app.use((req, res, next) => {
+//   const token = req.headers['x-csrf-token'] || req.body._csrf;
+//   if (!token || !tokens.verify('your-secret-key', token)) {
+//     return res
+//       .status(403)
+//       .json({ success: false, message: 'Invalid CSRF token' });
+//   }
+//   next();
+// });
 
 // Custom Middleware
 app.use(responseEnhancer); // Enhance response format

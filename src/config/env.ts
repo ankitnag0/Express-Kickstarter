@@ -13,15 +13,18 @@ const envSchema = z.object({
   PORT: z.preprocess((val) => Number(val), z.number().default(3000)),
   CORS_ORIGIN: z
     .string()
-    .default('*') // Default to '*' to allow all origins if not specified
-    .transform((val) => val.split(',').map((origin) => origin.trim())), // Split into an array if multiple origins are provided
+    .default('*')
+    .transform((val) => val.split(',').map((origin) => origin.trim())),
+  MONGODB_URL: z.string().default('mongodb://localhost:27017/mydatabase'), // Add MONGODB_URL here
 });
 
 // Parse and validate the environment variables
 const parsedEnv = envSchema.safeParse(process.env);
 
+// Throw an error if validation fails
 if (!parsedEnv.success) {
   throw new ZodValidationError(parsedEnv.error);
 }
 
+// Export the validated environment variables
 export const env = parsedEnv.data;

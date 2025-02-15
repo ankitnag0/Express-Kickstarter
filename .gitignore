@@ -9,8 +9,11 @@ build/
 # TypeScript  
 *.tsbuildinfo  
 
-# Environment variables  
-.env*  
+# Ignore all .env files
+.env*
+
+# Explicitly allow .env.example
+!.env.example
 
 # Logs & debugging  
 *.log  
