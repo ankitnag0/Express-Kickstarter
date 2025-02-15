@@ -2,8 +2,20 @@ import { ErrorRequestHandler } from 'express';
 import mongoose from 'mongoose';
 import { CustomError } from '../lib/CustomError';
 import { handleMongooseError } from '../utils/mongoose-error-handler';
+import logger from '../config/logger';
 
 const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
+  logger.error(
+    {
+      err,
+      url: req.originalUrl,
+      method: req.method,
+      reqBody: req.body,
+      reqHeaders: req.headers,
+    },
+    'Error encountered',
+  );
+
   // If it's a known CustomError, return the serialized response
   if (err instanceof CustomError) {
     return res.status(err.status).json(err.serialize());
