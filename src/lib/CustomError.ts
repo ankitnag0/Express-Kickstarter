@@ -1,46 +1,56 @@
 export class CustomError extends Error {
-  public statusCode: number;
-  constructor(name: string, statusCode: number, message: string) {
+  public status: number;
+
+  constructor(message: string, status: number) {
     super(message);
-    this.name = name;
-    this.statusCode = statusCode;
-    Error.captureStackTrace(this, this.constructor);
+    this.status = status;
+    this.name = new.target.name; // Automatically set error name to class name
+    Error.captureStackTrace(this, new.target);
+  }
+
+  serialize() {
+    return {
+      success: false,
+      status: this.status,
+      error: this.name,
+      message: this.message,
+    };
   }
 }
 
 // Standard API Errors
 export class BadRequestError extends CustomError {
   constructor(message = 'Bad Request') {
-    super('BadRequestError', 400, message);
+    super(message, 400);
   }
 }
 
 export class UnauthorizedError extends CustomError {
   constructor(message = 'Unauthorized') {
-    super('UnauthorizedError', 401, message);
+    super(message, 401);
   }
 }
 
 export class ForbiddenError extends CustomError {
   constructor(message = 'Forbidden') {
-    super('ForbiddenError', 403, message);
+    super(message, 403);
   }
 }
 
 export class NotFoundError extends CustomError {
   constructor(message = 'Not Found') {
-    super('NotFoundError', 404, message);
+    super(message, 404);
   }
 }
 
 export class ConflictError extends CustomError {
   constructor(message = 'Conflict') {
-    super('ConflictError', 409, message);
+    super(message, 409);
   }
 }
 
 export class InternalServerError extends CustomError {
   constructor(message = 'Internal Server Error') {
-    super('InternalServerError', 500, message);
+    super(message, 500);
   }
 }

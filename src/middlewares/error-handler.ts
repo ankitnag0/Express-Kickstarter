@@ -1,36 +1,20 @@
 import { ErrorRequestHandler } from 'express';
 import mongoose from 'mongoose';
-import { ZodError } from 'zod';
 import { CustomError } from '../lib/CustomError';
 import { handleMongooseError } from '../utils/mongoose-error-handler';
 
 const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
-  // Log the error using the logger
-
-  // Handle Custom API Errors
+  // If it's a known CustomError, return the serialized response
   if (err instanceof CustomError) {
-    return res.status(err.statusCode).json({
-      success: false,
-      error: err.name,
-      message: err.message,
-    });
+    return res.status(err.status).json(err.serialize());
   }
 
-  // Handle Zod Validation Errors
-  if (err instanceof ZodError) {
-    return res.status(400).json({
-      success: false,
-      error: 'ZodValidationError',
-      message: 'Invalid request data',
-      details: err.format(),
-    });
-  }
-
-  // Handle Mongoose Errors
+  // Handling Mongoose errors (or errors that have a "code" property)
   if (err instanceof mongoose.Error || 'code' in err) {
     const mongooseErrorResponse = handleMongooseError(err);
-    return res.status(mongooseErrorResponse.statusCode).json({
+    return res.status(mongooseErrorResponse.status).json({
       success: false,
+      status: mongooseErrorResponse.status,
       error: mongooseErrorResponse.error,
       message: mongooseErrorResponse.message,
       ...(mongooseErrorResponse.details && {
@@ -39,9 +23,10 @@ const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
     });
   }
 
-  // Fallback for unhandled errors
+  // Fallback for unknown errors
   return res.status(500).json({
     success: false,
+    status: 500,
     error: 'InternalServerError',
     message: 'Something went wrong',
   });
