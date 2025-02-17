@@ -16,6 +16,14 @@ const envSchema = z.object({
     .default('*')
     .transform((val) => val.split(',').map((origin) => origin.trim())),
   MONGODB_URL: z.string().default('mongodb://localhost:27017/mydatabase'), // Add MONGODB_URL here
+  JWT_SECRET: z.string().default('your-secret-key'),
+  JWT_EXPIRATION: z.preprocess(
+    (val) => Number(val),
+    z
+      .number()
+      .min(1, 'JWT expiration must be a positive number in seconds') // Ensures a valid positive number
+      .default(3600), // Default to 1 hour (3600 seconds)
+  ),
 });
 
 // Parse and validate the environment variables
