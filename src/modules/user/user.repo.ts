@@ -1,53 +1,62 @@
 import { Types } from 'mongoose';
 import { User, IUser, Role } from './user.model';
 
-// Interface for creating a user
+// Interfaces for user creation and update
 export interface CreateUserInput {
   name: string;
   email: string;
   password: string;
-  role?: IUser['role']; // Optional, defaults to 'user' in the schema
+  role?: IUser['role'];
 }
 
-// Interface for updating a user
 export interface UpdateUserInput {
   name?: string;
   role?: IUser['role'];
   password?: string;
 }
 
-export class UserRepository {
-  // Create a new user
-  async createUser(userData: CreateUserInput): Promise<IUser> {
-    const user = new User({
-      ...userData,
-      role: userData.role ?? Role.USER, // Default to 'user' if role is not provided
-    });
-    return await user.save();
-  }
-
-  // Update a user by ID
-  async updateUserById(
+// Type for the repository
+export type UserRepository = {
+  createUser(userData: CreateUserInput): Promise<IUser>;
+  updateUserById(
     userId: Types.ObjectId,
     updateData: UpdateUserInput,
-  ): Promise<IUser | null> {
-    return await User.findByIdAndUpdate(userId, updateData, {
-      new: true,
-    }).exec();
-  }
+  ): Promise<IUser | null>;
+  findUserById(userId: Types.ObjectId): Promise<IUser | null>;
+  findUserByEmail(email: string): Promise<IUser | null>;
+  findAllUsers(): Promise<Pick<IUser, 'name' | 'email' | 'role'>[]>;
+};
 
-  // Find a user by ID
-  async findUserById(userId: Types.ObjectId): Promise<IUser | null> {
-    return await User.findById(userId).exec();
-  }
+// Factory function to create the user repository
+export const createUserRepository = (): UserRepository => {
+  return {
+    async createUser(userData: CreateUserInput): Promise<IUser> {
+      const user = new User({
+        ...userData,
+        role: userData.role ?? Role.USER,
+      });
+      return await user.save();
+    },
 
-  // Find a user by email
-  async findUserByEmail(email: string): Promise<IUser | null> {
-    return await User.findOne({ email }).exec();
-  }
+    async updateUserById(
+      userId: Types.ObjectId,
+      updateData: UpdateUserInput,
+    ): Promise<IUser | null> {
+      return await User.findByIdAndUpdate(userId, updateData, {
+        new: true,
+      }).exec();
+    },
 
-  // Find all users (get names only)
-  async findAllUsers(): Promise<Pick<IUser, 'name' | 'email' | 'role'>[]> {
-    return await User.find({}, { name: 1, email: 1, role: 1, _id: 0 }).exec();
-  }
-}
+    async findUserById(userId: Types.ObjectId): Promise<IUser | null> {
+      return await User.findById(userId).exec();
+    },
+
+    async findUserByEmail(email: string): Promise<IUser | null> {
+      return await User.findOne({ email }).exec();
+    },
+
+    async findAllUsers(): Promise<Pick<IUser, 'name' | 'email' | 'role'>[]> {
+      return await User.find({}, { name: 1, email: 1, role: 1, _id: 0 }).exec();
+    },
+  };
+};

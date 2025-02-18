@@ -16,88 +16,91 @@ import {
 } from '../../lib/CustomError';
 import { Types } from 'mongoose';
 
-// User service class
-export class UserService {
-  constructor(private userRepo: UserRepository) {}
-
-  // Sign up a new user
-  async signUp(input: SignUpInput): Promise<IUser> {
-    // Check if user already exists
-    const existingUser = await this.userRepo.findUserByEmail(input.email);
-    if (existingUser) throw new ConflictError('User already exists.');
-
-    // Hash the password
-    const hashedPassword = await argon2.hash(input.password);
-
-    // Create new user
-    const user = await this.userRepo.createUser({
-      ...input,
-      password: hashedPassword,
-    });
-
-    return user;
-  }
-
-  // Sign in a user
-  async signIn(input: SignInInput): Promise<string> {
-    const user = await this.userRepo.findUserByEmail(input.email);
-    if (!user) throw new UnauthorizedError('Invalid email or password.');
-
-    // Verify password
-    const isPasswordValid = await argon2.verify(user.password, input.password);
-    if (!isPasswordValid)
-      throw new UnauthorizedError('Invalid email or password.');
-
-    // Generate JWT token
-    const token = jwt.sign({ id: user._id, role: user.role }, env.JWT_SECRET, {
-      expiresIn: env.JWT_EXPIRATION,
-    });
-
-    return token;
-  }
-
-  // Update user name or password
-  async updateNameOrPassword(
+// Type for the service
+export type UserService = {
+  signUp(input: SignUpInput): Promise<IUser>;
+  signIn(input: SignInInput): Promise<string>;
+  updateNameOrPassword(
     userId: string,
     input: UpdateNameOrPasswordInput,
-  ): Promise<IUser | null> {
-    const updateData: UpdateNameOrPasswordInput = {};
+  ): Promise<IUser | null>;
+  updateRole(userId: string, input: UpdateRoleInput): Promise<IUser | null>;
+  getAllUsers(): Promise<Pick<IUser, 'name' | 'email' | 'role'>[]>;
+};
 
-    if (input.name) updateData.name = input.name;
-    if (input.password) {
-      // Hash the new password
-      updateData.password = await argon2.hash(input.password);
-    }
+// Factory function to create the user service
+export const createUserService = (userRepo: UserRepository): UserService => {
+  return {
+    async signUp(input: SignUpInput): Promise<IUser> {
+      const existingUser = await userRepo.findUserByEmail(input.email);
+      if (existingUser) throw new ConflictError('User already exists.');
 
-    const updatedUser = await this.userRepo.updateUserById(
-      new Types.ObjectId(userId),
-      updateData,
-    );
+      const hashedPassword = await argon2.hash(input.password);
+      const user = await userRepo.createUser({
+        ...input,
+        password: hashedPassword,
+      });
 
-    if (!updatedUser) throw new NotFoundError('User not found.');
+      return user;
+    },
 
-    return updatedUser;
-  }
+    async signIn(input: SignInInput): Promise<string> {
+      const user = await userRepo.findUserByEmail(input.email);
+      if (!user) throw new UnauthorizedError('Invalid email or password.');
 
-  // Update user role (admin only)
-  async updateRole(
-    userId: string,
-    input: UpdateRoleInput,
-  ): Promise<IUser | null> {
-    const updatedUser = await this.userRepo.updateUserById(
-      new Types.ObjectId(userId),
-      {
-        role: input.role,
-      },
-    );
+      const isPasswordValid = await argon2.verify(
+        user.password,
+        input.password,
+      );
+      if (!isPasswordValid)
+        throw new UnauthorizedError('Invalid email or password.');
 
-    if (!updatedUser) throw new NotFoundError('User not found.');
+      const token = jwt.sign(
+        { id: user._id, role: user.role },
+        env.JWT_SECRET,
+        {
+          expiresIn: env.JWT_EXPIRATION,
+        },
+      );
 
-    return updatedUser;
-  }
+      return token;
+    },
 
-  // Get all users (admin only)
-  async getAllUsers(): Promise<Pick<IUser, 'name' | 'email' | 'role'>[]> {
-    return await this.userRepo.findAllUsers();
-  }
-}
+    async updateNameOrPassword(
+      userId: string,
+      input: UpdateNameOrPasswordInput,
+    ): Promise<IUser | null> {
+      const updateData: UpdateNameOrPasswordInput = {};
+
+      if (input.name) updateData.name = input.name;
+      if (input.password) {
+        updateData.password = await argon2.hash(input.password);
+      }
+
+      const updatedUser = await userRepo.updateUserById(
+        new Types.ObjectId(userId),
+        updateData,
+      );
+      if (!updatedUser) throw new NotFoundError('User not found.');
+
+      return updatedUser;
+    },
+
+    async updateRole(
+      userId: string,
+      input: UpdateRoleInput,
+    ): Promise<IUser | null> {
+      const updatedUser = await userRepo.updateUserById(
+        new Types.ObjectId(userId),
+        { role: input.role },
+      );
+      if (!updatedUser) throw new NotFoundError('User not found.');
+
+      return updatedUser;
+    },
+
+    async getAllUsers(): Promise<Pick<IUser, 'name' | 'email' | 'role'>[]> {
+      return await userRepo.findAllUsers();
+    },
+  };
+};

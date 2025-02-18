@@ -1,16 +1,14 @@
-import { UserRepository, CreateUserInput, UpdateUserInput } from '../user.repo';
+import { createUserRepository } from '../user.repo'; // Updated import for factory
 import { Role } from '../user.model';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 
-// Initialize repository
-let userRepository: UserRepository;
+let userRepository = createUserRepository(); // Use factory function
 
 beforeAll(() => {
-  userRepository = new UserRepository();
+  userRepository = createUserRepository();
 });
 
 beforeEach(async () => {
-  // Clear the database before each test if needed, assuming the database setup is handled globally
   if (mongoose.connection.db) {
     await mongoose.connection.db.dropDatabase();
   }
@@ -19,7 +17,7 @@ beforeEach(async () => {
 describe('UserRepository', () => {
   describe('createUser', () => {
     it('should create a new user successfully', async () => {
-      const userData: CreateUserInput = {
+      const userData = {
         name: 'John Doe',
         email: 'john.doe@example.com',
         password: 'password123',
@@ -34,7 +32,7 @@ describe('UserRepository', () => {
     });
 
     it('should set the correct role if provided', async () => {
-      const userData: CreateUserInput = {
+      const userData = {
         name: 'Admin User',
         email: 'admin.user@example.com',
         password: 'admin123',
@@ -49,7 +47,7 @@ describe('UserRepository', () => {
 
   describe('updateUserById', () => {
     it('should update user by ID successfully', async () => {
-      const userData: CreateUserInput = {
+      const userData = {
         name: 'John Doe',
         email: 'john.doe@example.com',
         password: 'password123',
@@ -57,7 +55,7 @@ describe('UserRepository', () => {
 
       const user = await userRepository.createUser(userData);
 
-      const updateData: UpdateUserInput = {
+      const updateData = {
         name: 'John Updated',
         role: Role.ADMIN,
       };
@@ -73,8 +71,8 @@ describe('UserRepository', () => {
     });
 
     it('should return null if user not found', async () => {
-      const nonExistentUserId = new mongoose.Types.ObjectId();
-      const updateData: UpdateUserInput = { name: 'Nonexistent User' };
+      const nonExistentUserId = new Types.ObjectId();
+      const updateData = { name: 'Nonexistent User' };
 
       const updatedUser = await userRepository.updateUserById(
         nonExistentUserId,
@@ -87,7 +85,7 @@ describe('UserRepository', () => {
 
   describe('findUserById', () => {
     it('should find a user by ID', async () => {
-      const userData: CreateUserInput = {
+      const userData = {
         name: 'Jane Doe',
         email: 'jane.doe@example.com',
         password: 'password123',
@@ -103,7 +101,7 @@ describe('UserRepository', () => {
     });
 
     it('should return null if user not found', async () => {
-      const nonExistentUserId = new mongoose.Types.ObjectId();
+      const nonExistentUserId = new Types.ObjectId();
 
       const foundUser = await userRepository.findUserById(nonExistentUserId);
 
@@ -113,7 +111,7 @@ describe('UserRepository', () => {
 
   describe('findUserByEmail', () => {
     it('should find a user by email', async () => {
-      const userData: CreateUserInput = {
+      const userData = {
         name: 'Mike Tyson',
         email: 'mike.tyson@example.com',
         password: 'password123',
@@ -138,12 +136,12 @@ describe('UserRepository', () => {
 
   describe('findAllUsers', () => {
     it('should return a list of users with only name, email, and role', async () => {
-      const userData1: CreateUserInput = {
+      const userData1 = {
         name: 'Alice Smith',
         email: 'alice.smith@example.com',
         password: 'password123',
       };
-      const userData2: CreateUserInput = {
+      const userData2 = {
         name: 'Bob Johnson',
         email: 'bob.johnson@example.com',
         password: 'password123',
@@ -155,19 +153,18 @@ describe('UserRepository', () => {
       const users = await userRepository.findAllUsers();
 
       expect(users).toHaveLength(2);
-      // Check that each user has the name, email, and role properties
       users.forEach((user) => {
         expect(user).toHaveProperty('name');
         expect(user).toHaveProperty('email');
         expect(user).toHaveProperty('role');
       });
-      // Check the content of the fields
+
       expect(users[0].name).toBe(userData1.name);
       expect(users[0].email).toBe(userData1.email);
-      expect(users[0].role).toBe(Role.USER); // assuming default role
+      expect(users[0].role).toBe(Role.USER);
       expect(users[1].name).toBe(userData2.name);
       expect(users[1].email).toBe(userData2.email);
-      expect(users[1].role).toBe(Role.USER); // assuming default role
+      expect(users[1].role).toBe(Role.USER);
     });
   });
 });

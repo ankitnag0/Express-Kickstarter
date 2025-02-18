@@ -22,6 +22,12 @@ export const updateRoleSchema = z.object({
   role: z.nativeEnum(Role), // Ensure role is one of the enum values
 });
 
+export const updateRoleParamsSchema = z.object({
+  id: z.string().refine((val) => /^[0-9a-fA-F]{24}$/.test(val), {
+    message: 'Invalid ObjectId',
+  }),
+});
+
 // Typing Zod schemas
 export type SignUpData = z.infer<typeof signUpSchema>;
 export type SignInData = z.infer<typeof signInSchema>;
@@ -29,7 +35,4 @@ export type UpdateNameOrPasswordData = z.infer<
   typeof updateNameOrPasswordSchema
 >;
 export type UpdateRoleData = z.infer<typeof updateRoleSchema>;
-
-export interface UpdateRoleParams {
-  id: string;
-}
+export type UpdateRoleParams = z.infer<typeof updateRoleParamsSchema>;
