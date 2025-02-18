@@ -1,7 +1,6 @@
 import { z } from 'zod';
-import { Role } from './user.model'; // Import your Role enum
+import { Role } from './user.types';
 
-// Zod schemas
 export const signUpSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
@@ -19,7 +18,7 @@ export const updateNameOrPasswordSchema = z.object({
 });
 
 export const updateRoleSchema = z.object({
-  role: z.nativeEnum(Role), // Ensure role is one of the enum values
+  role: z.nativeEnum(Role),
 });
 
 export const updateRoleParamsSchema = z.object({
@@ -28,7 +27,7 @@ export const updateRoleParamsSchema = z.object({
   }),
 });
 
-// Typing Zod schemas
+// Derived types from schemas:
 export type SignUpData = z.infer<typeof signUpSchema>;
 export type SignInData = z.infer<typeof signInSchema>;
 export type UpdateNameOrPasswordData = z.infer<

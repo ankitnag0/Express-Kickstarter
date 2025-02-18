@@ -1,11 +1,10 @@
-import { UserRepository } from './user.repo';
-import { IUser } from './user.model';
+import { IUser, UserRepository } from './types';
 import {
   SignUpInput,
   SignInInput,
   UpdateNameOrPasswordInput,
   UpdateRoleInput,
-} from './user.types';
+} from './types';
 import argon2 from 'argon2';
 import { env } from '../../config/env';
 import jwt from 'jsonwebtoken';
@@ -15,18 +14,7 @@ import {
   ConflictError,
 } from '../../lib/CustomError';
 import { Types } from 'mongoose';
-
-// Type for the service
-export type UserService = {
-  signUp(input: SignUpInput): Promise<IUser>;
-  signIn(input: SignInInput): Promise<string>;
-  updateNameOrPassword(
-    userId: string,
-    input: UpdateNameOrPasswordInput,
-  ): Promise<IUser | null>;
-  updateRole(userId: string, input: UpdateRoleInput): Promise<IUser | null>;
-  getAllUsers(): Promise<Pick<IUser, 'name' | 'email' | 'role'>[]>;
-};
+import { UserService } from './types';
 
 // Factory function to create the user service
 export const createUserService = (userRepo: UserRepository): UserService => {

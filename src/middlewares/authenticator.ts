@@ -3,8 +3,6 @@ import jwt from 'jsonwebtoken';
 import { UnauthorizedError } from '../lib/CustomError';
 import { env } from '../config/env';
 
-const JWT_SECRET = env.JWT_SECRET;
-
 export const authMiddleware = (
   req: Request,
   res: Response,
@@ -19,7 +17,7 @@ export const authMiddleware = (
   const token = authHeader.split(' ')[1];
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as {
+    const decoded = jwt.verify(token, env.JWT_SECRET) as {
       id: string;
       role: string;
     };

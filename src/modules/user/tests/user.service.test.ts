@@ -1,14 +1,14 @@
 // src/modules/user/test/user.service.test.ts
 
 import { createUserService } from '../user.service';
-import { UserRepository } from '../user.repo';
+import { UserRepository } from '../types';
 import {
   SignUpInput,
   SignInInput,
   UpdateNameOrPasswordInput,
   UpdateRoleInput,
-} from '../user.types';
-import { IUser, Role } from '../user.model';
+} from '../types';
+import { IUser, Role } from '../types';
 import {
   ConflictError,
   UnauthorizedError,

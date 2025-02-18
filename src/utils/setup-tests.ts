@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 let mongoServer: MongoMemoryServer;
 
 // Check if the test is an integration or e2e test
-const testTypes = ['repo', 'service', 'e2e'];
+const testTypes = ['repo', 'e2e'];
 
 const isIntegrationOrE2eTest = (testPath: string): boolean => {
   // Check if the test path contains any of the test types in the array

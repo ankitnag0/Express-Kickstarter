@@ -1,31 +1,12 @@
 import { Types } from 'mongoose';
-import { User, IUser, Role } from './user.model';
-
-// Interfaces for user creation and update
-export interface CreateUserInput {
-  name: string;
-  email: string;
-  password: string;
-  role?: IUser['role'];
-}
-
-export interface UpdateUserInput {
-  name?: string;
-  role?: IUser['role'];
-  password?: string;
-}
-
-// Type for the repository
-export type UserRepository = {
-  createUser(userData: CreateUserInput): Promise<IUser>;
-  updateUserById(
-    userId: Types.ObjectId,
-    updateData: UpdateUserInput,
-  ): Promise<IUser | null>;
-  findUserById(userId: Types.ObjectId): Promise<IUser | null>;
-  findUserByEmail(email: string): Promise<IUser | null>;
-  findAllUsers(): Promise<Pick<IUser, 'name' | 'email' | 'role'>[]>;
-};
+import {
+  CreateUserInput,
+  IUser,
+  Role,
+  UpdateUserInput,
+  UserRepository,
+} from './types';
+import { User } from './user.model';
 
 // Factory function to create the user repository
 export const createUserRepository = (): UserRepository => {

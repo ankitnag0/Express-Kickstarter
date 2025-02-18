@@ -1,0 +1,71 @@
+// types/factory.types.ts
+
+import { Request, Response } from 'express';
+import { Types } from 'mongoose';
+import {
+  IUser,
+  CreateUserInput,
+  UpdateUserInput,
+  SignUpInput,
+  SignInInput,
+  UpdateNameOrPasswordInput,
+  UpdateRoleInput,
+} from './user.types';
+import {
+  SignUpData,
+  SignInData,
+  UpdateNameOrPasswordData,
+  UpdateRoleData,
+  UpdateRoleParams,
+} from './user.schemas';
+
+/*--------------------------------------
+  Repository Factory Types
+--------------------------------------*/
+export type UserRepository = {
+  createUser(userData: CreateUserInput): Promise<IUser>;
+  updateUserById(
+    userId: Types.ObjectId,
+    updateData: UpdateUserInput,
+  ): Promise<IUser | null>;
+  findUserById(userId: Types.ObjectId): Promise<IUser | null>;
+  findUserByEmail(email: string): Promise<IUser | null>;
+  findAllUsers(): Promise<Pick<IUser, 'name' | 'email' | 'role'>[]>;
+};
+
+/*--------------------------------------
+  Service Factory Types
+--------------------------------------*/
+export type UserService = {
+  signUp(input: SignUpInput): Promise<IUser>;
+  signIn(input: SignInInput): Promise<string>;
+  updateNameOrPassword(
+    userId: string,
+    input: UpdateNameOrPasswordInput,
+  ): Promise<IUser | null>;
+  updateRole(userId: string, input: UpdateRoleInput): Promise<IUser | null>;
+  getAllUsers(): Promise<Pick<IUser, 'name' | 'email' | 'role'>[]>;
+};
+
+/*--------------------------------------
+  Controller Factory Types
+--------------------------------------*/
+export type UserController = {
+  signUp(
+    req: Request<unknown, unknown, SignUpData>,
+    res: Response,
+  ): Promise<void>;
+  signIn(
+    req: Request<unknown, unknown, SignInData>,
+    res: Response,
+  ): Promise<void>;
+  updateNameOrPassword(
+    req: Request<unknown, unknown, UpdateNameOrPasswordData>,
+    res: Response,
+  ): Promise<void>;
+  updateRole(
+    req: Request<UpdateRoleParams, unknown, UpdateRoleData>,
+    res: Response,
+  ): Promise<void>;
+  getAllUsers(req: Request, res: Response): Promise<void>;
+};

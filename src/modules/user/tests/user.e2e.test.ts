@@ -4,7 +4,7 @@ import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import app from '../../../app';
 import { env } from '../../../config/env';
-import { IUser } from '../user.model';
+import { IUser } from '../types';
 
 describe('User Feature E2E Tests', () => {
   /**

@@ -1,5 +1,5 @@
 import { createUserRepository } from '../user.repo'; // Updated import for factory
-import { Role } from '../user.model';
+import { Role } from '../types';
 import mongoose, { Types } from 'mongoose';
 
 let userRepository = createUserRepository(); // Use factory function

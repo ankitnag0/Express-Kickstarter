@@ -1,33 +1,12 @@
 import { Request, Response } from 'express';
-import { UserService } from './user.service';
 import {
   SignUpData,
   SignInData,
   UpdateNameOrPasswordData,
   UpdateRoleData,
   UpdateRoleParams,
-} from './user.schemas';
-
-// Type for the controller
-export type UserController = {
-  signUp(
-    req: Request<unknown, unknown, SignUpData>,
-    res: Response,
-  ): Promise<void>;
-  signIn(
-    req: Request<unknown, unknown, SignInData>,
-    res: Response,
-  ): Promise<void>;
-  updateNameOrPassword(
-    req: Request<unknown, unknown, UpdateNameOrPasswordData>,
-    res: Response,
-  ): Promise<void>;
-  updateRole(
-    req: Request<UpdateRoleParams, unknown, UpdateRoleData>,
-    res: Response,
-  ): Promise<void>;
-  getAllUsers(req: Request, res: Response): Promise<void>;
-};
+} from './types';
+import { UserController, UserService } from './types/factory.types';
 
 // Factory function to create the user controller
 export const createUserController = (

@@ -5,14 +5,14 @@ import { createUserRepository } from './user.repo';
 import { validate } from '../../middlewares/zod-validator';
 import { authMiddleware } from '../../middlewares/authenticator';
 import { rbacMiddleware } from '../../middlewares/role-enforcer';
-import { Role } from './user.model';
+import { Role } from './types';
 import {
   signUpSchema,
   signInSchema,
   updateNameOrPasswordSchema,
   updateRoleSchema,
   updateRoleParamsSchema,
-} from './user.schemas';
+} from './types';
 
 // Create instances of repo, service, and controller
 const userRepo = createUserRepository();
