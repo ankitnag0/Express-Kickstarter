@@ -1,6 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
+
 import { ForbiddenError } from '../lib/CustomError';
-import { Role } from '../modules/user/user.model';
+import { Role } from '../modules/user/types/';
 
 export const rbacMiddleware =
   (allowedRoles: Role[]) =>

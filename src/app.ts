@@ -1,15 +1,16 @@
-import express from 'express';
-import helmet from 'helmet';
-import cors from 'cors';
 import compression from 'compression';
-import rateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import express from 'express';
 import mongoSanitize from 'express-mongo-sanitize';
-import xss from 'xss';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 import hpp from 'hpp';
-import responseEnhancer from './middlewares/response-enhancer';
-import errorHandler from './middlewares/error-handler';
+import xss from 'xss';
+
 import { env } from './config/env';
+import errorHandler from './middlewares/error-handler';
+import responseEnhancer from './middlewares/response-enhancer';
 import router from './modules';
 
 const app = express();

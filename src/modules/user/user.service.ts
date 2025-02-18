@@ -1,20 +1,22 @@
-import { IUser, UserRepository } from './types';
+import argon2 from 'argon2';
+import jwt from 'jsonwebtoken';
+import { Types } from 'mongoose';
+
+import { env } from '../../config/env';
 import {
-  SignUpInput,
+  ConflictError,
+  NotFoundError,
+  UnauthorizedError,
+} from '../../lib/CustomError';
+import {
+  IUser,
   SignInInput,
+  SignUpInput,
   UpdateNameOrPasswordInput,
   UpdateRoleInput,
+  UserRepository,
+  UserService,
 } from './types';
-import argon2 from 'argon2';
-import { env } from '../../config/env';
-import jwt from 'jsonwebtoken';
-import {
-  UnauthorizedError,
-  NotFoundError,
-  ConflictError,
-} from '../../lib/CustomError';
-import { Types } from 'mongoose';
-import { UserService } from './types';
 
 // Factory function to create the user service
 export const createUserService = (userRepo: UserRepository): UserService => {

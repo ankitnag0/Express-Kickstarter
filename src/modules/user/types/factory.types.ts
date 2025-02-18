@@ -2,22 +2,23 @@
 
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
+
 import {
-  IUser,
-  CreateUserInput,
-  UpdateUserInput,
-  SignUpInput,
-  SignInInput,
-  UpdateNameOrPasswordInput,
-  UpdateRoleInput,
-} from './user.types';
-import {
-  SignUpData,
   SignInData,
+  SignUpData,
   UpdateNameOrPasswordData,
   UpdateRoleData,
   UpdateRoleParams,
 } from './user.schemas';
+import {
+  CreateUserInput,
+  IUser,
+  SignInInput,
+  SignUpInput,
+  UpdateNameOrPasswordInput,
+  UpdateRoleInput,
+  UpdateUserInput,
+} from './user.types';
 
 /*--------------------------------------
   Repository Factory Types

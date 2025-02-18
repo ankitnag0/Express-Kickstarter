@@ -1,23 +1,25 @@
 // src/modules/user/test/user.service.test.ts
 
-import { createUserService } from '../user.service';
-import { UserRepository } from '../types';
-import {
-  SignUpInput,
-  SignInInput,
-  UpdateNameOrPasswordInput,
-  UpdateRoleInput,
-} from '../types';
-import { IUser, Role } from '../types';
-import {
-  ConflictError,
-  UnauthorizedError,
-  NotFoundError,
-} from '../../../lib/CustomError';
 import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import { Types } from 'mongoose';
+
 import { env } from '../../../config/env';
+import {
+  ConflictError,
+  NotFoundError,
+  UnauthorizedError,
+} from '../../../lib/CustomError';
+import {
+  IUser,
+  Role,
+  SignInInput,
+  SignUpInput,
+  UpdateNameOrPasswordInput,
+  UpdateRoleInput,
+  UserRepository,
+} from '../types';
+import { createUserService } from '../user.service';
 
 // // Set test env variables
 // env.JWT_SECRET = 'testsecret';

@@ -1,12 +1,14 @@
 import { Request, Response } from 'express';
+
 import {
-  SignUpData,
   SignInData,
+  SignUpData,
   UpdateNameOrPasswordData,
   UpdateRoleData,
   UpdateRoleParams,
+  UserController,
+  UserService,
 } from './types';
-import { UserController, UserService } from './types/factory.types';
 
 // Factory function to create the user controller
 export const createUserController = (

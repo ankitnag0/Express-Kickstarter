@@ -1,4 +1,5 @@
 import { z } from 'zod';
+
 import { Role } from './user.types';
 
 export const signUpSchema = z.object({

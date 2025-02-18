@@ -1,5 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { ZodSchema } from 'zod';
+
 import { ZodValidationError } from '../lib/ValidationError';
 
 export const validate =

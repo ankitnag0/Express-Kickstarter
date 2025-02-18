@@ -1,18 +1,19 @@
 import { Router } from 'express';
-import { createUserController } from './user.controller';
-import { createUserService } from './user.service';
-import { createUserRepository } from './user.repo';
-import { validate } from '../../middlewares/zod-validator';
+
 import { authMiddleware } from '../../middlewares/authenticator';
 import { rbacMiddleware } from '../../middlewares/role-enforcer';
+import { validate } from '../../middlewares/zod-validator';
 import { Role } from './types';
 import {
-  signUpSchema,
   signInSchema,
+  signUpSchema,
   updateNameOrPasswordSchema,
-  updateRoleSchema,
   updateRoleParamsSchema,
+  updateRoleSchema,
 } from './types';
+import { createUserController } from './user.controller';
+import { createUserRepository } from './user.repo';
+import { createUserService } from './user.service';
 
 // Create instances of repo, service, and controller
 const userRepo = createUserRepository();

@@ -1,7 +1,8 @@
 // src/modules/user/test/user.e2e.test.ts
 
-import request from 'supertest';
 import jwt from 'jsonwebtoken';
+import request from 'supertest';
+
 import app from '../../../app';
 import { env } from '../../../config/env';
 import { IUser } from '../types';
