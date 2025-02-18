@@ -2,7 +2,7 @@
 import app from './app';
 import { env } from './config/env';
 import { connectDB, disconnectDB } from './config/database';
-import logger from './config/logger';
+import { logger } from './config/logger';
 
 const PORT = Number(env.PORT);
 

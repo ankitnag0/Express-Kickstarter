@@ -1,6 +1,6 @@
 import { ErrorRequestHandler } from 'express';
 import { CustomError } from '../lib/CustomError';
-import logger from '../config/logger';
+import { logger } from '../config/logger';
 
 const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
   logger.error(
