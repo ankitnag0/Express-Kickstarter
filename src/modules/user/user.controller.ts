@@ -2,21 +2,21 @@ import { Request, Response } from 'express';
 import { UserService } from './user.service';
 import { createController } from 'awilix-express';
 import { validate } from '../../middlewares/zod-validator';
+import { authMiddleware } from '../../middlewares/authenticator';
+import { rbacMiddleware } from '../../middlewares/role-enforcer';
+import { Role } from './user.model';
 import {
   signUpSchema,
   signInSchema,
   updateNameOrPasswordSchema,
   updateRoleSchema,
-} from './user.schemas';
-import {
+  UpdateRoleParams,
   SignUpData,
   SignInData,
   UpdateNameOrPasswordData,
   UpdateRoleData,
-  UpdateRoleParams,
 } from './user.schemas';
 
-// User Controller Class
 class UserController {
   constructor(private userService: UserService) {}
 
@@ -36,7 +36,7 @@ class UserController {
     req: Request<unknown, unknown, UpdateNameOrPasswordData>,
     res: Response,
   ) {
-    const userId = req.user?.id as string; // Access user from the request
+    const userId = req.user?.id as string;
     const { name, password } = req.body;
     const updatedUser = await this.userService.updateNameOrPassword(userId, {
       name,
@@ -61,13 +61,20 @@ class UserController {
   }
 }
 
-// Hooking up controller methods to routes
 export default createController(UserController)
   .prefix('/user')
   .post('/signup', 'signUp', { before: [validate(signUpSchema)] })
   .post('/signin', 'signIn', { before: [validate(signInSchema)] })
   .patch('/update', 'updateNameOrPassword', {
-    before: [validate(updateNameOrPasswordSchema)],
+    before: [authMiddleware, validate(updateNameOrPasswordSchema)],
   })
-  .patch('/role/:id', 'updateRole', { before: [validate(updateRoleSchema)] })
-  .get('/', 'getAllUsers');
+  .patch('/role/:id', 'updateRole', {
+    before: [
+      authMiddleware,
+      rbacMiddleware([Role.ADMIN]),
+      validate(updateRoleSchema),
+    ],
+  })
+  .get('/', 'getAllUsers', {
+    before: [authMiddleware, rbacMiddleware([Role.ADMIN])],
+  });
