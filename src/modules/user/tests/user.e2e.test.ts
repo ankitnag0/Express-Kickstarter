@@ -1,10 +1,11 @@
 // src/modules/user/test/user.e2e.test.ts
 
+import { env } from '@config/env';
 import jwt from 'jsonwebtoken';
 import request from 'supertest';
 
-import app from '../../../app';
-import { env } from '../../../config/env';
+import app from '@/app';
+
 import { IUser } from '../types';
 
 describe('User Feature E2E Tests', () => {

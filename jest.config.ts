@@ -55,7 +55,13 @@ const config: Config.InitialOptions = {
 
   // Use `jest`'s built-in module for mocking
   moduleNameMapper: {
-    '^src/(.*)$': '<rootDir>/src/$1', // Mapping for imports
+    '^@/(.*)$': '<rootDir>/src/$1',
+    '^@config/(.*)$': '<rootDir>/src/config/$1',
+    '^@lib/(.*)$': '<rootDir>/src/lib/$1',
+    '^@middlewares/(.*)$': '<rootDir>/src/middlewares/$1',
+    '^@modules/(.*)$': '<rootDir>/src/modules/$1',
+    '^@types/(.*)$': '<rootDir>/src/types/$1',
+    '^@utils/(.*)$': '<rootDir>/src/utils/$1',
   },
 };
 

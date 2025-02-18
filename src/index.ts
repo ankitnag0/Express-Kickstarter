@@ -1,8 +1,9 @@
 // src/index.ts
-import app from './app';
-import { connectDB, disconnectDB } from './config/database';
-import { env } from './config/env';
-import { logger } from './config/logger';
+import { connectDB, disconnectDB } from '@config/database';
+import { env } from '@config/env';
+import { logger } from '@config/logger';
+
+import app from '@/app';
 
 const PORT = Number(env.PORT);
 

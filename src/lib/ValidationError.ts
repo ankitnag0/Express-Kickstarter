@@ -1,6 +1,5 @@
+import { CustomError } from '@lib/CustomError';
 import { ZodError } from 'zod';
-
-import { CustomError } from './CustomError';
 
 export interface ValidationErrorDetail {
   field: string;

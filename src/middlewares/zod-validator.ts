@@ -1,7 +1,6 @@
+import { ZodValidationError } from '@lib/ValidationError';
 import { NextFunction, Request, Response } from 'express';
 import { ZodSchema } from 'zod';
-
-import { ZodValidationError } from '../lib/ValidationError';
 
 export const validate =
   (schema: ZodSchema, property: 'body' | 'query' | 'params' = 'body') =>

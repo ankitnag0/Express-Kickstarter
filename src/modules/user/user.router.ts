@@ -1,10 +1,10 @@
+import { authMiddleware } from '@middlewares/authenticator';
+import { rbacMiddleware } from '@middlewares/role-enforcer';
+import { validate } from '@middlewares/zod-validator';
 import { Router } from 'express';
 
-import { authMiddleware } from '../../middlewares/authenticator';
-import { rbacMiddleware } from '../../middlewares/role-enforcer';
-import { validate } from '../../middlewares/zod-validator';
-import { Role } from './types';
 import {
+  Role,
   signInSchema,
   signUpSchema,
   updateNameOrPasswordSchema,

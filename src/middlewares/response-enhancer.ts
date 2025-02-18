@@ -7,7 +7,11 @@ interface ApiResponse<T = unknown> {
   data: T;
 }
 
-const responseEnhancer = (req: Request, res: Response, next: NextFunction) => {
+export const responseEnhancer = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   res.success = function <T>(
     data: T,
     status: number = 200,
@@ -18,5 +22,3 @@ const responseEnhancer = (req: Request, res: Response, next: NextFunction) => {
   };
   next();
 };
-
-export default responseEnhancer;

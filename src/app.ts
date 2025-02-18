@@ -1,3 +1,7 @@
+import { env } from '@config/env';
+import { errorHandler } from '@middlewares/error-handler';
+import { responseEnhancer } from '@middlewares/response-enhancer';
+import { indexRouter } from '@modules/index';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -7,11 +11,6 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import hpp from 'hpp';
 import xss from 'xss';
-
-import { env } from './config/env';
-import errorHandler from './middlewares/error-handler';
-import responseEnhancer from './middlewares/response-enhancer';
-import router from './modules';
 
 const app = express();
 
@@ -69,7 +68,7 @@ app.get('/', (req, res) => {
   res.success({ message: 'Hello, World!' }, 200, 'API is working!');
 });
 
-app.use('/api', router);
+app.use('/api', indexRouter);
 
 // Error Handling Middleware
 app.use(errorHandler); // Add error handler here

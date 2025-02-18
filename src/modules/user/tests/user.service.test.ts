@@ -1,15 +1,15 @@
 // src/modules/user/test/user.service.test.ts
 
-import argon2 from 'argon2';
-import jwt from 'jsonwebtoken';
-import { Types } from 'mongoose';
-
-import { env } from '../../../config/env';
+import { env } from '@config/env';
 import {
   ConflictError,
   NotFoundError,
   UnauthorizedError,
-} from '../../../lib/CustomError';
+} from '@lib/CustomError';
+import argon2 from 'argon2';
+import jwt from 'jsonwebtoken';
+import { Types } from 'mongoose';
+
 import {
   IUser,
   Role,

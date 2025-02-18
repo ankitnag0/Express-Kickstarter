@@ -1,9 +1,8 @@
+import { logger } from '@config/logger';
+import { CustomError } from '@lib/CustomError';
 import { ErrorRequestHandler } from 'express';
 
-import { logger } from '../config/logger';
-import { CustomError } from '../lib/CustomError';
-
-const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
+export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
   logger.error(
     {
       err,
@@ -28,5 +27,3 @@ const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
     message: 'Something went wrong',
   });
 };
-
-export default errorHandler;

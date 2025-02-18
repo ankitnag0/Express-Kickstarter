@@ -1,7 +1,6 @@
+import { ZodValidationError } from '@lib/ValidationError';
 import dotenvFlow from 'dotenv-flow';
 import { z } from 'zod';
-
-import { ZodValidationError } from '../lib/ValidationError';
 
 // Load environment variables from .env files
 dotenvFlow.config();

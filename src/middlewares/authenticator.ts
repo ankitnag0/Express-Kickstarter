@@ -1,8 +1,7 @@
+import { env } from '@config/env';
+import { UnauthorizedError } from '@lib/CustomError';
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-
-import { env } from '../config/env';
-import { UnauthorizedError } from '../lib/CustomError';
 
 export const authMiddleware = (
   req: Request,
