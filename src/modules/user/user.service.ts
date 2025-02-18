@@ -1,5 +1,11 @@
 import { UserRepository } from './user.repo';
-import { IUser, Role } from './user.model';
+import { IUser } from './user.model';
+import {
+  SignUpInput,
+  SignInInput,
+  UpdateNameOrPasswordInput,
+  UpdateRoleInput,
+} from './user.types';
 import argon2 from 'argon2';
 import { env } from '../../config/env';
 import jwt from 'jsonwebtoken';
@@ -9,27 +15,6 @@ import {
   ConflictError,
 } from '../../lib/CustomError';
 import { Types } from 'mongoose';
-
-// Interfaces for request body
-export interface SignUpInput {
-  name: string;
-  email: string;
-  password: string;
-}
-
-export interface SignInInput {
-  email: string;
-  password: string;
-}
-
-export interface UpdateNameOrPasswordInput {
-  name?: string;
-  password?: string;
-}
-
-export interface UpdateRoleInput {
-  role: Role;
-}
 
 // User service class
 export class UserService {
