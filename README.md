@@ -74,6 +74,7 @@ Welcome to **Express-Kickstarter** – the ultimate no-nonsense Express API boil
 
      ```bash
      cp .env.example .env.development
+     cp .env.example .env.test
      ```
 
    - Edit the `.env` file with your settings:
