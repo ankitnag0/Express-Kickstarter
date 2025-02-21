@@ -1,4 +1,3 @@
-
 # Express-Kickstarter
 
 Welcome to **Express-Kickstarter** – the ultimate no-nonsense Express API boilerplate built with TypeScript. If you’re sick of half-assed starter kits and endless boilerplate that barely holds up in production, you’re in the right place. This project is secure, thoroughly tested, and packed with modern dev tools so you can build scalable APIs without the BS.
@@ -10,26 +9,32 @@ Welcome to **Express-Kickstarter** – the ultimate no-nonsense Express API boil
 ### Key Features
 
 - **TypeScript & Tooling**
+
   - **Type Safety:** Write code that doesn’t break at runtime.
   - **ESLint & Prettier:** Keep your code looking fresh and consistent.
   - **Jest Testing:** Unit, integration, and end-to-end tests so you never ship trash.
 
 - **Environment & Config Management**
+
   - Uses **dotenv-flow** and **Zod** to load and validate environment variables. If your .env is misconfigured, the app will call you out immediately.
 
 - **Security & Performance**
+
   - **Helmet, CORS, & Rate Limiting:** Basic measures to block the riff-raff.
   - **Mongo Sanitization & XSS Protection:** Stops malicious payloads dead in their tracks.
   - **Compression & HTTP Logging:** Powered by Pino (with pino-pretty in dev) to keep responses fast and logs readable.
 
 - **Robust Error Handling**
+
   - Custom error classes deliver clear, no-BS messages so debugging isn’t a wild goose chase.
 
 - **Authentication & Authorization**
+
   - **JWT Authentication:** Secure your endpoints with tokens so only the right folks get in.
   - **Role-Based Access Control (RBAC):** Admin-only routes ensure that only authorized peeps have access.
 
 - **User Module**
+
   - Complete user management: sign-up, sign-in, profile updates, and role management.
   - Comprehensive tests cover every layer (repository, service, controller) ensuring your user flows are bulletproof.
 
@@ -68,7 +73,7 @@ Welcome to **Express-Kickstarter** – the ultimate no-nonsense Express API boil
    - Duplicate the `.env.example` file to create your own `.env`:
 
      ```bash
-     cp .env.example .env
+     cp .env.example .env.development
      ```
 
    - Edit the `.env` file with your settings:
