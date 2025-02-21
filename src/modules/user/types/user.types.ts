@@ -1,16 +1,10 @@
 import { Document, model, Schema, Types } from 'mongoose';
 
-/*--------------------------------------
-  1. Enums
---------------------------------------*/
 export enum Role {
   USER = 'user',
   ADMIN = 'admin',
 }
 
-/*--------------------------------------
-  2. Mongoose Model & Schema
---------------------------------------*/
 export interface IUser extends Document {
   _id: Types.ObjectId;
   name: string;
@@ -33,9 +27,6 @@ const userSchema = new Schema<IUser>(
 
 export const User = model<IUser>('User', userSchema);
 
-/*--------------------------------------
-  3. Service Layer Types
---------------------------------------*/
 export interface SignUpInput {
   name: string;
   email: string;
@@ -56,9 +47,6 @@ export interface UpdateRoleInput {
   role: Role;
 }
 
-/*--------------------------------------
-  4. Repository Types & Factory Function
---------------------------------------*/
 export interface CreateUserInput {
   name: string;
   email: string;

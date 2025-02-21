@@ -9,7 +9,6 @@ import {
 } from './types';
 import { User } from './user.model';
 
-// Factory function to create the user repository
 export const createUserRepository = (): UserRepository => {
   return {
     async createUser(userData: CreateUserInput): Promise<IUser> {

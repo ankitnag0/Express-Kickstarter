@@ -1,9 +1,9 @@
 import mongoose, { Types } from 'mongoose';
 
 import { Role } from '../types';
-import { createUserRepository } from '../user.repo'; // Updated import for factory
+import { createUserRepository } from '../user.repo';
 
-let userRepository = createUserRepository(); // Use factory function
+let userRepository = createUserRepository();
 
 beforeAll(() => {
   userRepository = createUserRepository();

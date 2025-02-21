@@ -4,7 +4,7 @@ export class CustomError extends Error {
   constructor(message: string, status: number) {
     super(message);
     this.status = status;
-    this.name = new.target.name; // Automatically set error name to class name
+    this.name = new.target.name;
     Error.captureStackTrace(this, new.target);
   }
 
@@ -18,7 +18,6 @@ export class CustomError extends Error {
   }
 }
 
-// Standard API Errors
 export class BadRequestError extends CustomError {
   constructor(message = 'Bad Request') {
     super(message, 400);

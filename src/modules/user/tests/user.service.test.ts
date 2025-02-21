@@ -1,5 +1,3 @@
-// src/modules/user/test/user.service.test.ts
-
 import { env } from '@config/env';
 import {
   ConflictError,
@@ -21,11 +19,6 @@ import {
 } from '../types';
 import { createUserService } from '../user.service';
 
-// // Set test env variables
-// env.JWT_SECRET = 'testsecret';
-// env.JWT_EXPIRATION = 3600;
-
-// --- Mocks for external dependencies ---
 jest.mock('argon2', () => ({
   hash: jest.fn(),
   verify: jest.fn(),
@@ -40,7 +33,6 @@ describe('UserService', () => {
   let userService: ReturnType<typeof createUserService>;
 
   beforeEach(() => {
-    // Fresh mock for each test
     mockUserRepo = {
       findUserById: jest.fn(),
       findUserByEmail: jest.fn(),
@@ -268,6 +260,7 @@ describe('UserService', () => {
         { name: 'User1', email: 'user1@example.com', role: Role.USER },
         { name: 'User2', email: 'user2@example.com', role: Role.ADMIN },
       ];
+
       mockUserRepo.findAllUsers.mockResolvedValueOnce(users);
 
       const result = await userService.getAllUsers();

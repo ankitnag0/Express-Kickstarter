@@ -13,7 +13,7 @@ export const validate =
 
     Object.defineProperty(req, property, {
       value: result.data,
-      writable: false, // Prevent accidental mutation
+      writable: false,
       configurable: false,
     });
 

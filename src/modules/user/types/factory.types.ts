@@ -1,5 +1,3 @@
-// types/factory.types.ts
-
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 
@@ -20,9 +18,6 @@ import {
   UpdateUserInput,
 } from './user.types';
 
-/*--------------------------------------
-  Repository Factory Types
---------------------------------------*/
 export type UserRepository = {
   createUser(userData: CreateUserInput): Promise<IUser>;
   updateUserById(
@@ -34,9 +29,6 @@ export type UserRepository = {
   findAllUsers(): Promise<Pick<IUser, 'name' | 'email' | 'role'>[]>;
 };
 
-/*--------------------------------------
-  Service Factory Types
---------------------------------------*/
 export type UserService = {
   signUp(input: SignUpInput): Promise<IUser>;
   signIn(input: SignInInput): Promise<string>;
@@ -48,9 +40,6 @@ export type UserService = {
   getAllUsers(): Promise<Pick<IUser, 'name' | 'email' | 'role'>[]>;
 };
 
-/*--------------------------------------
-  Controller Factory Types
---------------------------------------*/
 export type UserController = {
   signUp(
     req: Request<unknown, unknown, SignUpData>,

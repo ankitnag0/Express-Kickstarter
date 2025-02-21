@@ -28,11 +28,11 @@ export const updateRoleParamsSchema = z.object({
   }),
 });
 
-// Derived types from schemas:
 export type SignUpData = z.infer<typeof signUpSchema>;
 export type SignInData = z.infer<typeof signInSchema>;
 export type UpdateNameOrPasswordData = z.infer<
   typeof updateNameOrPasswordSchema
 >;
+
 export type UpdateRoleData = z.infer<typeof updateRoleSchema>;
 export type UpdateRoleParams = z.infer<typeof updateRoleParamsSchema>;

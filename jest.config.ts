@@ -1,59 +1,44 @@
 import type { Config } from '@jest/types';
 
 const config: Config.InitialOptions = {
-  // Specifies where to find your test files
-  roots: ['<rootDir>/src/modules'], // All tests inside `src/modules/*/tests/`
+  roots: ['<rootDir>/src/modules'],
 
-  // Tell Jest how to match test files
-  testMatch: [
-    '**/tests/**/*.test.ts', // Match any `.test.ts` files under `tests/` folder
-    '**/tests/**/*.spec.ts', // If you use `.spec.ts` too
-  ],
+  testMatch: ['**/tests/**/*.test.ts', '**/tests/**/*.spec.ts'],
 
-  // Ensure TypeScript support
-  preset: 'ts-jest', // Use `ts-jest` for TypeScript tests
+  preset: 'ts-jest',
 
-  // Custom Jest transformer for TypeScript
   transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest', // Handles `.ts` files for Jest
+    '^.+\\.(ts|tsx)$': 'ts-jest',
   },
 
-  // Coverage collection setup
   collectCoverage: true,
   collectCoverageFrom: [
-    'src/modules/**/*.ts', // Collect coverage from all `.ts` files in `modules/`
-    '!src/modules/**/*.d.ts', // Exclude TypeScript definition files
-    '!src/modules/**/tests/**', // Exclude the test files themselves
+    'src/modules/**/*.ts',
+    '!src/modules/**/*.d.ts',
+    '!src/modules/**/tests/**',
   ],
 
-  // Setup files for the environment, like your `setup-tests.ts`
   setupFilesAfterEnv: ['<rootDir>/src/utils/setup-tests.ts'],
 
-  // Configure code coverage options
   coverageDirectory: '<rootDir>/coverage',
-  coverageProvider: 'v8', // Choose coverage provider (v8 is more modern)
+  coverageProvider: 'v8',
   coverageThreshold: {
     global: {
-      branches: 80, // Minimum branches coverage threshold
-      functions: 80, // Minimum functions coverage threshold
-      lines: 80, // Minimum lines coverage threshold
-      statements: 80, // Minimum statements coverage threshold
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
     },
   },
 
-  // Test environment (default is `node`, but you may want to use `jsdom` for e2e tests)
-  testEnvironment: 'node', // Change to 'jsdom' for front-end related e2e tests if necessary
+  testEnvironment: 'node',
 
-  // Specify module paths for easy imports (optional)
-  moduleDirectories: ['node_modules', 'src'], // Allows for absolute imports inside `src`
+  moduleDirectories: ['node_modules', 'src'],
 
-  // Timeout settings
-  testTimeout: 10000, // Timeout for each test in ms (10 seconds)
+  testTimeout: 10000,
 
-  // Configure verbose output
   verbose: true,
 
-  // Use `jest`'s built-in module for mocking
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@config/(.*)$': '<rootDir>/src/config/$1',

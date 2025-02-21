@@ -15,14 +15,12 @@ import { createUserController } from './user.controller';
 import { createUserRepository } from './user.repo';
 import { createUserService } from './user.service';
 
-// Create instances of repo, service, and controller
 const userRepo = createUserRepository();
 const userService = createUserService(userRepo);
 const userController = createUserController(userService);
 
 const router = Router();
 
-// Define routes with middlewares
 router.post('/signup', validate(signUpSchema), userController.signUp);
 router.post('/signin', validate(signInSchema), userController.signIn);
 router.patch(

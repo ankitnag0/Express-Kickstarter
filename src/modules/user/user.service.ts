@@ -18,7 +18,6 @@ import {
   UserService,
 } from './types';
 
-// Factory function to create the user service
 export const createUserService = (userRepo: UserRepository): UserService => {
   return {
     async signUp(input: SignUpInput): Promise<IUser> {

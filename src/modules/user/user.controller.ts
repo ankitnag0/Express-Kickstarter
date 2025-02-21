@@ -10,7 +10,6 @@ import {
   UserService,
 } from './types';
 
-// Factory function to create the user controller
 export const createUserController = (
   userService: UserService,
 ): UserController => {

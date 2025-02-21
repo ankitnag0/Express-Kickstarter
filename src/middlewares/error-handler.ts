@@ -14,12 +14,10 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
     'Error encountered',
   );
 
-  // If it's a known CustomError, return the serialized response
   if (err instanceof CustomError) {
     return res.status(err.status).json(err.serialize());
   }
 
-  // Fallback for unknown errors
   return res.status(500).json({
     success: false,
     status: 500,
