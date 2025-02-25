@@ -22,6 +22,11 @@ const envSchema = z.object({
       .min(1, 'JWT expiration must be a positive number in seconds')
       .default(3600),
   ),
+  REDIS_URL: z.string().default('redis://localhost:6379'),
+  CACHE_TTL: z.preprocess(
+    (val) => Number(val),
+    z.number().min(1).default(3600),
+  ),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

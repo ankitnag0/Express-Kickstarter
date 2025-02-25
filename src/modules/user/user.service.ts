@@ -1,3 +1,4 @@
+import { cache } from '@config/cache';
 import { env } from '@config/env';
 import {
   ConflictError,
@@ -18,6 +19,10 @@ import {
   UserService,
 } from './types';
 
+const CACHE_KEYS = {
+  ALL_USERS: 'users:all',
+};
+
 export const createUserService = (userRepo: UserRepository): UserService => {
   return {
     async signUp(input: SignUpInput): Promise<IUser> {
@@ -30,6 +35,7 @@ export const createUserService = (userRepo: UserRepository): UserService => {
         password: hashedPassword,
       });
 
+      await cache.invalidate(CACHE_KEYS.ALL_USERS); // Invalidate cached users list
       return user;
     },
 
@@ -72,6 +78,7 @@ export const createUserService = (userRepo: UserRepository): UserService => {
       );
       if (!updatedUser) throw new NotFoundError('User not found.');
 
+      await cache.invalidate(CACHE_KEYS.ALL_USERS);
       return updatedUser;
     },
 
@@ -85,11 +92,19 @@ export const createUserService = (userRepo: UserRepository): UserService => {
       );
       if (!updatedUser) throw new NotFoundError('User not found.');
 
+      await cache.invalidate(CACHE_KEYS.ALL_USERS);
       return updatedUser;
     },
 
     async getAllUsers(): Promise<Pick<IUser, 'name' | 'email' | 'role'>[]> {
-      return await userRepo.findAllUsers();
+      const cachedUsers = await cache.get<
+        Pick<IUser, 'name' | 'email' | 'role'>[]
+      >(CACHE_KEYS.ALL_USERS);
+      if (cachedUsers) return cachedUsers;
+
+      const users = await userRepo.findAllUsers();
+      await cache.set(CACHE_KEYS.ALL_USERS, users);
+      return users;
     },
   };
 };

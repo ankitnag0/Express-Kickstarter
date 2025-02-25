@@ -1,3 +1,4 @@
+import { cache } from '@config/cache';
 import { connectDB, disconnectDB } from '@config/database';
 import { env } from '@config/env';
 import { logger } from '@config/logger';
@@ -9,6 +10,7 @@ const PORT = Number(env.PORT);
 const startServer = async () => {
   try {
     await connectDB();
+    await cache.connect();
     const server = app.listen(PORT, () => {
       logger.info(`Server is running on http://localhost:${PORT}`);
     });
@@ -21,6 +23,7 @@ const startServer = async () => {
           process.exit(1);
         }
         await disconnectDB();
+        await cache.disconnect();
         logger.info('Server closed. Exiting...');
         process.exit(0);
       });
