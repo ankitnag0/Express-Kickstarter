@@ -1,3 +1,4 @@
+import { cache } from '@config/cache';
 import { env } from '@config/env';
 import {
   ConflictError,
@@ -26,6 +27,14 @@ jest.mock('argon2', () => ({
 
 jest.mock('jsonwebtoken', () => ({
   sign: jest.fn(),
+}));
+
+jest.mock('@config/cache', () => ({
+  cache: {
+    invalidate: jest.fn(),
+    get: jest.fn(),
+    set: jest.fn(),
+  },
 }));
 
 describe('UserService', () => {
@@ -61,6 +70,8 @@ describe('UserService', () => {
 
       await expect(userService.signUp(input)).rejects.toThrow(ConflictError);
       expect(mockUserRepo.findUserByEmail).toHaveBeenCalledWith(input.email);
+      // Cache.invalidate should not be called on error
+      expect(cache.invalidate).not.toHaveBeenCalled();
     });
 
     it('should create user successfully if user does not exist', async () => {
@@ -88,6 +99,7 @@ describe('UserService', () => {
         ...input,
         password: 'hashedPassword',
       });
+      expect(cache.invalidate).toHaveBeenCalledWith('users:all');
     });
   });
 
@@ -177,6 +189,7 @@ describe('UserService', () => {
         new Types.ObjectId(userId),
         { name: input.name, password: 'newHashedPassword' },
       );
+      expect(cache.invalidate).toHaveBeenCalledWith('users:all');
     });
 
     it('should update user name only if password is not provided', async () => {
@@ -201,6 +214,7 @@ describe('UserService', () => {
         new Types.ObjectId(userId),
         { name: input.name },
       );
+      expect(cache.invalidate).toHaveBeenCalledWith('users:all');
     });
 
     it('should throw NotFoundError if user is not found', async () => {
@@ -215,6 +229,8 @@ describe('UserService', () => {
         new Types.ObjectId(userId),
         { name: input.name },
       );
+      // cache.invalidate should not be called if update fails
+      expect(cache.invalidate).not.toHaveBeenCalled();
     });
   });
 
@@ -237,6 +253,7 @@ describe('UserService', () => {
         new Types.ObjectId(userId),
         { role: input.role },
       );
+      expect(cache.invalidate).toHaveBeenCalledWith('users:all');
     });
 
     it('should throw NotFoundError if user is not found', async () => {
@@ -251,21 +268,38 @@ describe('UserService', () => {
         new Types.ObjectId(userId),
         { role: input.role },
       );
+      // cache.invalidate should not be called if update fails
+      expect(cache.invalidate).not.toHaveBeenCalled();
     });
   });
 
   describe('getAllUsers', () => {
-    it('should return list of users with selected fields', async () => {
+    it('should return cached users if available', async () => {
+      const cachedUsers = [
+        { name: 'User1', email: 'user1@example.com', role: Role.USER },
+        { name: 'User2', email: 'user2@example.com', role: Role.ADMIN },
+      ];
+      (cache.get as jest.Mock).mockResolvedValueOnce(cachedUsers);
+
+      const result = await userService.getAllUsers();
+      expect(cache.get).toHaveBeenCalledWith('users:all');
+      expect(result).toEqual(cachedUsers);
+      expect(mockUserRepo.findAllUsers).not.toHaveBeenCalled();
+    });
+
+    it('should fetch users from repo, set cache, and return them on cache miss', async () => {
+      (cache.get as jest.Mock).mockResolvedValueOnce(null);
       const users = [
         { name: 'User1', email: 'user1@example.com', role: Role.USER },
         { name: 'User2', email: 'user2@example.com', role: Role.ADMIN },
       ];
-
       mockUserRepo.findAllUsers.mockResolvedValueOnce(users);
 
       const result = await userService.getAllUsers();
-      expect(result).toEqual(users);
+      expect(cache.get).toHaveBeenCalledWith('users:all');
       expect(mockUserRepo.findAllUsers).toHaveBeenCalled();
+      expect(cache.set).toHaveBeenCalledWith('users:all', users);
+      expect(result).toEqual(users);
     });
   });
 });

@@ -1,3 +1,4 @@
+import { cache } from '@config/cache';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 
@@ -26,9 +27,12 @@ afterAll(async () => {
 
   if (testPath && isIntegrationOrE2eTest(testPath)) {
     await mongoose.disconnect();
-
     await mongoServer.stop();
   }
+});
+
+afterAll(async () => {
+  await cache.disconnect();
 });
 
 beforeEach(async () => {

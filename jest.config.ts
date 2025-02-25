@@ -11,7 +11,7 @@ const config: Config.InitialOptions = {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
 
-  collectCoverage: true,
+  collectCoverage: process.env.COVERAGE === 'true',
   collectCoverageFrom: [
     'src/modules/**/*.ts',
     '!src/modules/**/*.d.ts',
@@ -19,7 +19,6 @@ const config: Config.InitialOptions = {
   ],
 
   setupFilesAfterEnv: ['<rootDir>/src/utils/setup-tests.ts'],
-
   coverageDirectory: '<rootDir>/coverage',
   coverageProvider: 'v8',
   coverageThreshold: {
