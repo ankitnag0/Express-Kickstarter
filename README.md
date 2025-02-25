@@ -1,177 +1,126 @@
-# Express-Kickstarter
+# Express Kickstarter
 
-Welcome to **Express-Kickstarter** – the ultimate no-nonsense Express API boilerplate built with TypeScript. If you’re sick of half-assed starter kits and endless boilerplate that barely holds up in production, you’re in the right place. This project is secure, thoroughly tested, and packed with modern dev tools so you can build scalable APIs without the BS.
+Welcome to **Express Kickstarter**, a fully-featured, best-practices-packed Express + TypeScript boilerplate. This isn't just another template—it's a battle-hardened setup designed for scalability, maintainability, and top-tier developer experience.
 
----
+## Features
 
-## What’s Inside?
+### Ultimate Developer Experience
 
-### Key Features
+- **TypeScript First**: Strictly typed codebase for maximum safety.
+- **ESLint + Prettier + Lefthook**: Auto-linting, formatting, and commit hooks ensure a clean codebase.
+- **Jest with Full Test Coverage**: Includes unit, integration, and e2e tests.
+- **Modular & Scalable Structure**: Follows dependency injection and feature-based modularization.
 
-- **TypeScript & Tooling**
+### Environment & Configurations
 
-  - **Type Safety:** Write code that doesn’t break at runtime.
-  - **ESLint & Prettier:** Keep your code looking fresh and consistent.
-  - **Jest Testing:** Unit, integration, and end-to-end tests so you never ship trash.
+- **dotenv-flow for Multi-Env Support**: Unlike `dotenv`, `dotenv-flow` supports `.env.development`, `.env.production`, etc.
+- **Test Environment Support**: `NODE_ENV=test` will trigger dotenv-flow to use `.env.test`, ensuring correct configurations during testing.
+- **Centralized Configs**: All environment variables are validated via Zod in `config/env.ts`.
 
-- **Environment & Config Management**
+### Security & Performance
 
-  - Uses **dotenv-flow** and **Zod** to load and validate environment variables. If your .env is misconfigured, the app will call you out immediately.
+- **Helmet + CORS + Rate-Limiting**: Protects against common web vulnerabilities.
+- **Mongo-Sanitize & HPP**: Prevents NoSQL injection and HTTP parameter pollution.
+- **Compression Enabled**: Gzip compression via `compression` middleware.
 
-- **Security & Performance**
+### Logging & Error Handling
 
-  - **Helmet, CORS, & Rate Limiting:** Basic measures to block the riff-raff.
-  - **Mongo Sanitization & XSS Protection:** Stops malicious payloads dead in their tracks.
-  - **Compression & HTTP Logging:** Powered by Pino (with pino-pretty in dev) to keep responses fast and logs readable.
+- **Pino Logger**: Blazing fast logging with colorized output in development.
+- **Custom Error Handling**: Centralized error handling with `CustomError` and `ValidationError`.
+- **Response Enhancer Middleware**: Ensures every response follows a structured format.
 
-- **Robust Error Handling**
-
-  - Custom error classes deliver clear, no-BS messages so debugging isn’t a wild goose chase.
-
-- **Authentication & Authorization**
-
-  - **JWT Authentication:** Secure your endpoints with tokens so only the right folks get in.
-  - **Role-Based Access Control (RBAC):** Admin-only routes ensure that only authorized peeps have access.
-
-- **User Module**
-
-  - Complete user management: sign-up, sign-in, profile updates, and role management.
-  - Comprehensive tests cover every layer (repository, service, controller) ensuring your user flows are bulletproof.
-
-- **Developer Experience**
-  - A clean, organized project structure with preconfigured linting, formatting, and TypeScript settings (see `tsconfig.json` for performance optimizations and absolute imports).
-
----
-
-## Getting Started
-
-### Prerequisites
-
-- **Node.js:** v14+ (LTS recommended).
-- **MongoDB:** Running instance (local or remote).
-- **Package Manager:** [pnpm](https://pnpm.io/) is recommended (npm works too if that’s your style).
-
-### Installation
-
-1. **Clone the Repository:**
-
-   ```bash
-   git clone https://github.com/yourusername/express-kickstarter.git
-   cd express-kickstarter
-   ```
-
-2. **Install Dependencies:**
-
-   ```bash
-   pnpm install
-   # or
-   npm install
-   ```
-
-3. **Configure Your Environment:**
-
-   - Duplicate the `.env.example` file to create your own `.env`:
-
-     ```bash
-     cp .env.example .env.development
-     cp .env.example .env.test
-     ```
-
-   - Edit the `.env` file with your settings:
-     - `NODE_ENV` — `development`, `test`, or `production`
-     - `PORT` — Your server’s port (default: 3000)
-     - `CORS_ORIGIN` — Comma-separated allowed origins (e.g., `http://localhost:3000`)
-     - `MONGODB_URL` — Your MongoDB connection string
-     - `JWT_SECRET` — Secret key for signing JWTs (keep this locked down)
-     - `JWT_EXPIRATION` — Expiration time in seconds (e.g., `3600`)
-
----
-
-## Running the Server
-
-### Development Mode
-
-Run the server with hot-reloading to get instant feedback:
-
-```bash
-pnpm run dev
-# or
-npm run dev
-```
-
-### Production Build
-
-Build your project and run it like a boss:
-
-```bash
-pnpm run build
-pnpm run start
-# or with npm:
-npm run build
-npm run start
-```
-
----
-
-## Testing
-
-This project comes with a rock-solid testing suite—no shortcuts here:
-
-- **Run All Tests:**
-
-  ```bash
-  pnpm run test
-  # or
-  npm run test
-  ```
-
-- **Watch Mode:**  
-  For rapid feedback during development.
-
-  ```bash
-  pnpm run test:watch
-  # or
-  npm run test:watch
-  ```
-
-Tests cover everything—from API endpoints to service and repository logic—so you can be sure your app isn’t complete garbage.
-
----
-
-## Project Structure
+### Project Structure
 
 ```
-├── .env.example                   # Template for environment variables
-├── .gitignore                     # Files/folders to ignore in Git
-├── .prettierrc & .prettierignore  # Code formatting configuration
-├── eslint.config.mjs              # ESLint rules to enforce code quality
-├── jest.config.ts                 # Jest testing configuration
-├── package.json                   # Project metadata and scripts
-├── tsconfig.json                  # TypeScript compiler options and path aliases
-└── src/                           # Main source code
-    ├── app.ts                     # Express app setup with middleware
-    ├── config/                    # Environment, database, and logger configurations
-    ├── lib/                       # Custom error classes and validation utilities
-    ├── middlewares/               # Authentication, error handling, logging, etc.
-    └── modules/                   # Feature modules (e.g., User module with routes, controllers, services, tests)
+src/
+├── config/       # Configurations (env, logger, etc.)
+├── lib/          # Custom utilities (CustomError, ValidationError)
+├── middlewares/  # Global middlewares (auth, logging, response enhancer)
+├── modules/      # Feature-based modules
+│   ├── user/
+│   │   ├── user.controller.ts
+│   │   ├── user.service.ts
+│   │   ├── user.repository.ts
+│   │   ├── user.schema.ts
+│   │   ├── user.types.ts
+│   │   ├── tests/
+├── utils/        # Helpers (setup-tests, formatters, etc.)
 ```
 
+## Setup & Installation
+
+### 1️⃣ Clone the Repository
+
+```sh
+git clone https://github.com/your-repo/express-kickstarter.git
+cd express-kickstarter
+```
+
+### 2️⃣ Install Dependencies
+
+```sh
+pnpm install
+```
+
+### 3️⃣ Setup Environment Variables
+
+```sh
+cp .env.example .env.development
+cp .env.example .env.test
+```
+
+Modify `.env.development` and `.env.test` with your configuration.
+
+### 4️⃣ Run the App
+
+#### Development Mode
+
+```sh
+pnpm dev
+```
+
+#### Production Mode
+
+```sh
+pnpm build && pnpm start
+```
+
+### 5️⃣ Running Tests
+
+```sh
+pnpm test              # Run all tests
+pnpm test:unit         # Run unit tests
+pnpm test:integration  # Run integration tests
+pnpm test:e2e          # Run end-to-end tests
+```
+
+> Ensure `.env.test` is properly configured, as `NODE_ENV=test` will trigger dotenv-flow to load it.
+
+## API Conventions & Guidelines
+
+- **Controller Methods Return `Response.success<T>()`**: Standardized responses.
+- **Validation Middleware**: Uses Zod to validate request payloads.
+- **Error Handling**: All errors extend `CustomError`.
+
+## Using AI to Generate Consistent, High-Quality Code
+
+Once an AI (like ChatGPT) is familiarized with this project’s patterns, it can:
+
+- Generate new feature modules (`user`, `post`, `auth`, etc.) with clean, testable code.
+- Maintain strict TypeScript rules and best practices.
+- Write tests following the existing structure.
+- Ensure all controllers return properly structured responses.
+- Generate middleware, repository, and service logic without breaking conventions.
+
+### How to Use AI with This Boilerplate
+
+1. **Provide this README** to the AI so it understands the architecture.
+2. **Explain what you need**, e.g., "Generate a `Post` module with CRUD operations."
+3. **Review & refine the AI output** before adding it to the codebase.
+4. **Run tests** to ensure everything integrates properly.
+
+This approach allows for **rapid, consistent, and high-quality code generation** while maintaining best practices.
+
 ---
 
-## Contributing
-
-Think you can improve this boilerplate? Fork the repo, commit your changes, and open a pull request. Just keep it clean, well-tested, and actually useful—no half-assing it.
-
----
-
-## License
-
-Express-Kickstarter is licensed under the **ISC License**. Use it, modify it, but if it breaks your app, don’t come crying to us.
-
----
-
-## Final Thoughts
-
-Express-Kickstarter isn’t here to hold your hand—it’s built for developers who demand efficiency, security, and scalable code. If you’re done with wimpy starter kits and ready for something that actually works, dive in and build something epic.
-
-No sugar-coating. No excuses. Just solid, production-ready code.
+This boilerplate ensures you spend less time setting up and more time building!
