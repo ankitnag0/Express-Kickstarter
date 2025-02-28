@@ -2,8 +2,11 @@ import { cache } from '@config/cache';
 import { connectDB, disconnectDB } from '@config/database';
 import { env } from '@config/env';
 import { logger } from '@config/logger';
+import agenda from '@jobs/agenda';
 
 import app from '@/app';
+
+import { scheduleHelloWorld } from './jobs';
 
 const PORT = Number(env.PORT);
 
@@ -15,6 +18,11 @@ const startServer = async () => {
       logger.info(`Server is running on http://localhost:${PORT}`);
     });
 
+    await agenda.start();
+    logger.info('Agenda started');
+
+    await scheduleHelloWorld();
+
     const gracefulShutdown = () => {
       logger.info('Shutting down gracefully...');
       server.close(async (err) => {
@@ -22,6 +30,7 @@ const startServer = async () => {
           logger.error('Error during server shutdown:', err);
           process.exit(1);
         }
+        await agenda.stop();
         await disconnectDB();
         await cache.disconnect();
         logger.info('Server closed. Exiting...');
@@ -31,8 +40,10 @@ const startServer = async () => {
 
     process.on('SIGINT', gracefulShutdown);
     process.on('SIGTERM', gracefulShutdown);
-  } catch (error) {
-    logger.error('Failed to start the server:', error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logger.error('Failed to start the server:', error);
+    }
     process.exit(1);
   }
 };

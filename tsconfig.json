@@ -34,6 +34,7 @@
     "paths": {
       "@/*": ["src/*"],
       "@config/*": ["src/config/*"],
+      "@jobs/*": ["src/jobs/*"],
       "@lib/*": ["src/lib/*"],
       "@middlewares/*": ["src/middlewares/*"],
       "@modules/*": ["src/modules/*"],
