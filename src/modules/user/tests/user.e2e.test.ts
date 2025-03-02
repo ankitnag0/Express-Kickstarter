@@ -4,12 +4,15 @@ import request from 'supertest';
 
 import app from '@/app';
 
-import { IUser } from '../types';
+import { IUser, Role } from '../types'; // Import Role enum
+import { createUserRepository } from '../user.repo'; // Import UserRepository
+
+const userRepository = createUserRepository(); // Get UserRepository instance
 
 describe('User Feature E2E Tests', () => {
   describe('Basic API Route', () => {
-    it('GET / should return API working message', async () => {
-      const res = await request(app).get('/');
+    it('GET /api should return API working message', async () => {
+      const res = await request(app).get('/api');
       expect(res.status).toBe(200);
       expect(res.body).toMatchObject({
         success: true,
@@ -20,9 +23,9 @@ describe('User Feature E2E Tests', () => {
     });
   });
 
-  describe('POST /api/user/signup', () => {
+  describe('POST /api/users/signup', () => {
     it('should register a new user', async () => {
-      const res = await request(app).post('/api/user/signup').send({
+      const res = await request(app).post('/api/users/signup').send({
         name: 'Test User',
         email: 'test@example.com',
         password: 'password123',
@@ -40,16 +43,16 @@ describe('User Feature E2E Tests', () => {
     });
   });
 
-  describe('POST /api/user/signin', () => {
-    it('should sign in an existing user and return a token', async () => {
-      await request(app).post('/api/user/signup').send({
+  describe('POST /api/users/signin', () => {
+    it('should sign in an existing user and return access and refresh tokens', async () => {
+      await request(app).post('/api/users/signup').send({
         name: 'Test User2',
         email: 'test2@example.com',
         password: 'password123',
       });
 
       const res = await request(app)
-        .post('/api/user/signin')
+        .post('/api/users/signin')
         .send({ email: 'test2@example.com', password: 'password123' });
       expect(res.status).toBe(200);
       expect(res.body).toMatchObject({
@@ -57,26 +60,27 @@ describe('User Feature E2E Tests', () => {
         status: 200,
         message: 'Login successful.',
       });
-      expect(res.body.data).toHaveProperty('token');
+      expect(res.body.data).toHaveProperty('accessToken');
+      expect(res.body.data).toHaveProperty('refreshToken');
     });
   });
 
-  describe('PATCH /api/user/update', () => {
+  describe('PATCH /api/users/update', () => {
     it('should update the user profile (name and password)', async () => {
-      await request(app).post('/api/user/signup').send({
+      await request(app).post('/api/users/signup').send({
         name: 'Test User3',
         email: 'test3@example.com',
         password: 'password123',
       });
 
       const signinRes = await request(app)
-        .post('/api/user/signin')
+        .post('/api/users/signin')
         .send({ email: 'test3@example.com', password: 'password123' });
-      const token = signinRes.body.data.token;
+      const accessToken = signinRes.body.data.accessToken;
 
       const updateRes = await request(app)
-        .patch('/api/user/update')
-        .set('Authorization', `Bearer ${token}`)
+        .patch('/api/users/update')
+        .set('Authorization', `Bearer ${accessToken}`)
         .send({ name: 'Updated Name', password: 'newpassword123' });
 
       expect(updateRes.status).toBe(200);
@@ -88,32 +92,42 @@ describe('User Feature E2E Tests', () => {
       expect(updateRes.body.data).toHaveProperty('name', 'Updated Name');
 
       const reSigninRes = await request(app)
-        .post('/api/user/signin')
+        .post('/api/users/signin')
         .send({ email: 'test3@example.com', password: 'newpassword123' });
       expect(reSigninRes.status).toBe(200);
-      expect(reSigninRes.body.data).toHaveProperty('token');
+      expect(reSigninRes.body.data).toHaveProperty('accessToken');
+      expect(reSigninRes.body.data).toHaveProperty('refreshToken');
     });
   });
 
-  describe('PATCH /api/user/role/:id', () => {
+  describe('PATCH /api/users/role/:id', () => {
     it('should update the user role when requested by an admin', async () => {
-      const signupRes = await request(app).post('/api/user/signup').send({
+      const signupRes = await request(app).post('/api/users/signup').send({
         name: 'Test User4',
         email: 'test4@example.com',
         password: 'password123',
       });
-
       const userId = signupRes.body.data._id;
 
-      const adminToken = jwt.sign(
-        { id: 'admin', role: 'admin' },
+      // 1. Create an Admin User in the database
+      const adminUserData = {
+        name: 'Admin User',
+        email: 'admin@example.com',
+        password: 'adminpassword123',
+        role: Role.ADMIN, // Explicitly set role to ADMIN
+      };
+      const adminUser = await userRepository.createUser(adminUserData); // Use userRepository to create admin user
+
+      // 2. Generate admin token using the Admin User's _id
+      const adminAccessToken = jwt.sign(
+        { id: adminUser._id, role: adminUser.role }, // Use adminUser._id and adminUser.role
         env.JWT_SECRET,
         { expiresIn: env.JWT_EXPIRATION },
       );
 
       const roleUpdateRes = await request(app)
-        .patch(`/api/user/role/${userId}`)
-        .set('Authorization', `Bearer ${adminToken}`)
+        .patch(`/api/users/role/${userId}`)
+        .set('Authorization', `Bearer ${adminAccessToken}`)
         .send({ role: 'admin' });
 
       expect(roleUpdateRes.status).toBe(200);
@@ -126,28 +140,38 @@ describe('User Feature E2E Tests', () => {
     });
   });
 
-  describe('GET /api/user/users', () => {
+  describe('GET /api/users/users', () => {
     it('should retrieve a list of users (admin only)', async () => {
-      await request(app).post('/api/user/signup').send({
+      await request(app).post('/api/users/signup').send({
         name: 'User One',
         email: 'userone@example.com',
         password: 'password123',
       });
-      await request(app).post('/api/user/signup').send({
+      await request(app).post('/api/users/signup').send({
         name: 'User Two',
         email: 'usertwo@example.com',
         password: 'password123',
       });
 
-      const adminToken = jwt.sign(
-        { id: 'admin', role: 'admin' },
+      // 1. Create an Admin User in the database (if not already created in beforeEach/beforeAll)
+      const adminUserData = {
+        name: 'Admin User',
+        email: 'admin2@example.com',
+        password: 'adminpassword123',
+        role: Role.ADMIN, // Explicitly set role to ADMIN
+      };
+      const adminUser = await userRepository.createUser(adminUserData); // Use userRepository to create admin user
+
+      // 2. Generate admin token using the Admin User's _id
+      const adminAccessToken = jwt.sign(
+        { id: adminUser._id, role: adminUser.role }, // Use adminUser._id and adminUser.role
         env.JWT_SECRET,
         { expiresIn: env.JWT_EXPIRATION },
       );
 
       const usersRes = await request(app)
-        .get('/api/user/users')
-        .set('Authorization', `Bearer ${adminToken}`);
+        .get('/api/users/users')
+        .set('Authorization', `Bearer ${adminAccessToken}`);
 
       expect(usersRes.status).toBe(200);
       expect(usersRes.body).toMatchObject({
@@ -165,30 +189,39 @@ describe('User Feature E2E Tests', () => {
       );
     });
   });
-  // New tests for paginated users
-  describe('GET /api/user/paginated', () => {
+
+  describe('GET /api/users/paginated', () => {
     it('should return paginated users with default parameters', async () => {
-      // Create some users for pagination
-      await request(app).post('/api/user/signup').send({
+      await request(app).post('/api/users/signup').send({
         name: 'Paginated User 1',
         email: 'paginated1@example.com',
         password: 'password123',
       });
-      await request(app).post('/api/user/signup').send({
+      await request(app).post('/api/users/signup').send({
         name: 'Paginated User 2',
         email: 'paginated2@example.com',
         password: 'password123',
       });
 
-      const adminToken = jwt.sign(
-        { id: 'admin', role: 'admin' },
+      // 1. Create an Admin User in the database (if not already created in beforeEach/beforeAll)
+      const adminUserData = {
+        name: 'Admin User',
+        email: 'admin3@example.com',
+        password: 'adminpassword123',
+        role: Role.ADMIN, // Explicitly set role to ADMIN
+      };
+      const adminUser = await userRepository.createUser(adminUserData); // Use userRepository to create admin user
+
+      // 2. Generate admin token using the Admin User's _id
+      const adminAccessToken = jwt.sign(
+        { id: adminUser._id, role: adminUser.role }, // Use adminUser._id and adminUser.role
         env.JWT_SECRET,
         { expiresIn: env.JWT_EXPIRATION },
       );
 
       const res = await request(app)
-        .get('/api/user/paginated')
-        .set('Authorization', `Bearer ${adminToken}`);
+        .get('/api/users/paginated')
+        .set('Authorization', `Bearer ${adminAccessToken}`);
 
       expect(res.status).toBe(200);
       expect(res.body).toMatchObject({
@@ -204,10 +237,9 @@ describe('User Feature E2E Tests', () => {
     });
 
     it('should return paginated users with provided query parameters', async () => {
-      // Create several users for proper pagination testing
       for (let i = 0; i < 15; i++) {
         await request(app)
-          .post('/api/user/signup')
+          .post('/api/users/signup')
           .send({
             name: `Paginated User ${i}`,
             email: `paginateduser${i}@example.com`,
@@ -215,15 +247,25 @@ describe('User Feature E2E Tests', () => {
           });
       }
 
-      const adminToken = jwt.sign(
-        { id: 'admin', role: 'admin' },
+      // 1. Create an Admin User in the database (if not already created in beforeEach/beforeAll)
+      const adminUserData = {
+        name: 'Admin User',
+        email: 'admin4@example.com',
+        password: 'adminpassword123',
+        role: Role.ADMIN, // Explicitly set role to ADMIN
+      };
+      const adminUser = await userRepository.createUser(adminUserData); // Use userRepository to create admin user
+
+      // 2. Generate admin token using the Admin User's _id
+      const adminAccessToken = jwt.sign(
+        { id: adminUser._id, role: adminUser.role }, // Use adminUser._id and adminUser.role
         env.JWT_SECRET,
         { expiresIn: env.JWT_EXPIRATION },
       );
 
       const res = await request(app)
-        .get('/api/user/paginated?page=2&limit=5')
-        .set('Authorization', `Bearer ${adminToken}`);
+        .get('/api/users/paginated?page=2&limit=5')
+        .set('Authorization', `Bearer ${adminAccessToken}`);
 
       expect(res.status).toBe(200);
       expect(res.body.data).toHaveProperty('page', 2);
@@ -232,21 +274,5 @@ describe('User Feature E2E Tests', () => {
       expect(Array.isArray(res.body.data.users)).toBe(true);
       expect(res.body.data.users.length).toBeLessThanOrEqual(5);
     });
-
-    // it('should return a validation error for invalid query parameters', async () => {
-    //   const adminToken = jwt.sign(
-    //     { id: 'admin', role: 'admin' },
-    //     env.JWT_SECRET,
-    //     { expiresIn: env.JWT_EXPIRATION },
-    //   );
-    //
-    //   const res = await request(app)
-    //     .get('/api/user/paginated?page=0&limit=5')
-    //     .set('Authorization', `Bearer ${adminToken}`);
-    //
-    //   // Expect a validation error (HTTP 400)
-    //   expect(res.status).toBe(422);
-    //   expect(res.body).toHaveProperty('error');
-    // });
   });
 });

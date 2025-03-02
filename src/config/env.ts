@@ -20,7 +20,16 @@ const envSchema = z.object({
     z
       .number()
       .min(1, 'JWT expiration must be a positive number in seconds')
-      .default(3600),
+      .default(3600), // 1 hour default, adjust as needed
+  ),
+  JWT_REFRESH_SECRET: z.string().default('your-refresh-secret-key'), // Add refresh token secret
+  JWT_REFRESH_EXPIRATION: z.preprocess(
+    // Add refresh token expiration
+    (val) => Number(val),
+    z
+      .number()
+      .min(1, 'JWT refresh expiration must be a positive number in seconds')
+      .default(86400 * 7), // 7 days default, adjust as needed
   ),
   REDIS_URL: z.string().default('redis://localhost:6379'),
   CACHE_TTL: z.preprocess(

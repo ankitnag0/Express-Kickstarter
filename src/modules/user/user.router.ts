@@ -1,4 +1,4 @@
-import { authMiddleware } from '@middlewares/authenticator';
+import { jwtAuth } from '@config/passport'; // Import jwtAuth from passport config
 import { rbacMiddleware } from '@middlewares/role-enforcer';
 import { validate } from '@middlewares/zod-validator';
 import { Router } from 'express';
@@ -26,13 +26,13 @@ router.post('/signup', validate(signUpSchema), userController.signUp);
 router.post('/signin', validate(signInSchema), userController.signIn);
 router.patch(
   '/update',
-  authMiddleware,
+  jwtAuth(), // Use passport JWT auth middleware
   validate(updateNameOrPasswordSchema),
   userController.updateNameOrPassword,
 );
 router.patch(
   '/role/:id',
-  authMiddleware,
+  jwtAuth(), // Use passport JWT auth middleware
   rbacMiddleware([Role.ADMIN]),
   validate(updateRoleSchema),
   validate(updateRoleParamsSchema, 'params'),
@@ -40,13 +40,13 @@ router.patch(
 );
 router.get(
   '/users',
-  authMiddleware,
+  jwtAuth(), // Use passport JWT auth middleware
   rbacMiddleware([Role.ADMIN]),
   userController.getAllUsers,
 );
 router.get(
   '/paginated',
-  authMiddleware,
+  jwtAuth(), // Use passport JWT auth middleware
   rbacMiddleware([Role.ADMIN]),
   validate(paginationSchema, 'query'),
   userController.getPaginatedUsers,

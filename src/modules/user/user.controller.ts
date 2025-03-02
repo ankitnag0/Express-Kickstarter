@@ -23,8 +23,11 @@ export const createUserController = (
 
     async signIn(req: Request<unknown, unknown, SignInData>, res: Response) {
       const { email, password } = req.body;
-      const token = await userService.signIn({ email, password });
-      res.success({ token }, 200, 'Login successful.');
+      const { accessToken, refreshToken } = await userService.signIn({
+        email,
+        password,
+      }); // Get both tokens
+      res.success({ accessToken, refreshToken }, 200, 'Login successful.'); // Send both tokens in response
     },
 
     async updateNameOrPassword(

@@ -71,7 +71,6 @@ describe('UserService', () => {
 
       await expect(userService.signUp(input)).rejects.toThrow(ConflictError);
       expect(mockUserRepo.findUserByEmail).toHaveBeenCalledWith(input.email);
-      // Cache.invalidate should not be called on error
       expect(cache.invalidate).not.toHaveBeenCalled();
     });
 
@@ -139,7 +138,8 @@ describe('UserService', () => {
       expect(argon2.verify).toHaveBeenCalledWith(user.password, input.password);
     });
 
-    it('should return token if credentials are valid', async () => {
+    it('should return access and refresh tokens if credentials are valid', async () => {
+      // Updated test description
       const input: SignInInput = {
         email: 'test@example.com',
         password: 'password',
@@ -153,14 +153,28 @@ describe('UserService', () => {
       } as IUser;
       mockUserRepo.findUserByEmail.mockResolvedValueOnce(user);
       (argon2.verify as jest.Mock).mockResolvedValueOnce(true);
-      (jwt.sign as jest.Mock).mockReturnValueOnce('token123');
 
-      const token = await userService.signIn(input);
-      expect(token).toEqual('token123');
+      const accessToken = 'mockedAccessToken'; // Mocked access token
+      const refreshToken = 'mockedRefreshToken'; // Mocked refresh token
+      (jwt.sign as jest.Mock)
+        .mockReturnValueOnce(accessToken) // Mock generateAccessToken
+        .mockReturnValueOnce(refreshToken); // Mock generateRefreshToken
+
+      const tokens = await userService.signIn(input); // Get both tokens
+      expect(tokens).toEqual({ accessToken, refreshToken }); // Assert both tokens are returned
+      expect(jwt.sign).toHaveBeenCalledTimes(2); // Assert jwt.sign called twice (once for access, once for refresh)
+
       expect(jwt.sign).toHaveBeenCalledWith(
+        // Verify generateAccessToken call
         { id: user._id, role: user.role },
         env.JWT_SECRET,
         { expiresIn: env.JWT_EXPIRATION },
+      );
+      expect(jwt.sign).toHaveBeenCalledWith(
+        // Verify generateRefreshToken call
+        { id: user._id, tokenType: 'refresh' },
+        env.JWT_REFRESH_SECRET,
+        { expiresIn: env.JWT_REFRESH_EXPIRATION },
       );
     });
   });
@@ -230,7 +244,6 @@ describe('UserService', () => {
         new Types.ObjectId(userId),
         { name: input.name },
       );
-      // cache.invalidate should not be called if update fails
       expect(cache.invalidate).not.toHaveBeenCalled();
     });
   });
@@ -269,7 +282,6 @@ describe('UserService', () => {
         new Types.ObjectId(userId),
         { role: input.role },
       );
-      // cache.invalidate should not be called if update fails
       expect(cache.invalidate).not.toHaveBeenCalled();
     });
   });
@@ -303,7 +315,7 @@ describe('UserService', () => {
       expect(result).toEqual(users);
     });
   });
-  // New suite for paginated users in the service
+
   describe('getUsersPaginated', () => {
     it('should return paginated users with correct total count', async () => {
       const users = [

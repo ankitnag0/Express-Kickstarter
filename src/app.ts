@@ -1,4 +1,5 @@
 import { env } from '@config/env';
+import { passportSetup } from '@config/passport';
 import { errorHandler } from '@middlewares/error-handler';
 import { responseEnhancer } from '@middlewares/response-enhancer';
 import { indexRouter } from '@modules/index';
@@ -13,6 +14,8 @@ import hpp from 'hpp';
 import xss from 'xss';
 
 const app = express();
+
+passportSetup();
 
 app.use(helmet());
 app.use(

@@ -168,10 +168,9 @@ describe('UserRepository', () => {
       expect(users[1].role).toBe(Role.USER);
     });
   });
-  // New suite for paginated fetch
+
   describe('findUsersPaginated', () => {
     it('should return paginated users with correct total count', async () => {
-      // Create two users
       const userData1 = {
         name: 'Paginated User 1',
         email: 'puser1@example.com',
@@ -186,12 +185,10 @@ describe('UserRepository', () => {
       await userRepository.createUser(userData1);
       await userRepository.createUser(userData2);
 
-      // Page 1 with limit 1 should return the first user and total count 2
       const result = await userRepository.findUsersPaginated(1, 1);
       expect(result.users).toHaveLength(1);
       expect(result.total).toBe(2);
 
-      // Page 2 with limit 1 should return the second user
       const resultPage2 = await userRepository.findUsersPaginated(2, 1);
       expect(resultPage2.users).toHaveLength(1);
       expect(resultPage2.total).toBe(2);

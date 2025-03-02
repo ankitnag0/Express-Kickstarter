@@ -23,6 +23,22 @@ const CACHE_KEYS = {
   ALL_USERS: 'users:all',
 };
 
+// Function to generate Access Token
+const generateAccessToken = (user: IUser): string => {
+  return jwt.sign({ id: user._id, role: user.role }, env.JWT_SECRET, {
+    expiresIn: env.JWT_EXPIRATION,
+  });
+};
+
+// Function to generate Refresh Token
+const generateRefreshToken = (user: IUser): string => {
+  return jwt.sign(
+    { id: user._id, tokenType: 'refresh' }, //tokenType to differentiate
+    env.JWT_REFRESH_SECRET,
+    { expiresIn: env.JWT_REFRESH_EXPIRATION },
+  );
+};
+
 export const createUserService = (userRepo: UserRepository): UserService => {
   return {
     async signUp(input: SignUpInput): Promise<IUser> {
@@ -35,11 +51,14 @@ export const createUserService = (userRepo: UserRepository): UserService => {
         password: hashedPassword,
       });
 
-      await cache.invalidate(CACHE_KEYS.ALL_USERS); // Invalidate cached users list
+      await cache.invalidate(CACHE_KEYS.ALL_USERS);
       return user;
     },
 
-    async signIn(input: SignInInput): Promise<string> {
+    async signIn(
+      input: SignInInput,
+    ): Promise<{ accessToken: string; refreshToken: string }> {
+      // Return both tokens
       const user = await userRepo.findUserByEmail(input.email);
       if (!user) throw new UnauthorizedError('Invalid email or password.');
 
@@ -50,15 +69,10 @@ export const createUserService = (userRepo: UserRepository): UserService => {
       if (!isPasswordValid)
         throw new UnauthorizedError('Invalid email or password.');
 
-      const token = jwt.sign(
-        { id: user._id, role: user.role },
-        env.JWT_SECRET,
-        {
-          expiresIn: env.JWT_EXPIRATION,
-        },
-      );
+      const accessToken = generateAccessToken(user); // Generate access token
+      const refreshToken = generateRefreshToken(user); // Generate refresh token
 
-      return token;
+      return { accessToken, refreshToken }; // Return both tokens
     },
 
     async updateNameOrPassword(

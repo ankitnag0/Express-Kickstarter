@@ -40,7 +40,9 @@ export type UserRepository = {
 
 export type UserService = {
   signUp(input: SignUpInput): Promise<IUser>;
-  signIn(input: SignInInput): Promise<string>;
+  signIn(
+    input: SignInInput,
+  ): Promise<{ accessToken: string; refreshToken: string }>;
   updateNameOrPassword(
     userId: string,
     input: UpdateNameOrPasswordInput,
