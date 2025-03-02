@@ -36,6 +36,11 @@ const envSchema = z.object({
     (val) => Number(val),
     z.number().min(1).default(3600),
   ),
+  GOOGLE_CLIENT_ID: z.string().min(1, 'GOOGLE_CLIENT_ID cannot be empty'),
+  GOOGLE_CLIENT_SECRET: z
+    .string()
+    .min(1, 'GOOGLE_CLIENT_SECRET cannot be empty'),
+  GOOGLE_CALLBACK_URL: z.string().min(1, 'GOOGLE_CALLBACK_URL cannot be empty'),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

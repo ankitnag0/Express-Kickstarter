@@ -1,13 +1,13 @@
 import { cache } from '@config/cache';
-import { env } from '@config/env';
 import {
   ConflictError,
   NotFoundError,
   UnauthorizedError,
 } from '@lib/CustomError';
 import argon2 from 'argon2';
-import jwt from 'jsonwebtoken';
 import { Types } from 'mongoose';
+
+import { generateAccessToken, generateRefreshToken } from '@/utils/jwt-helpers';
 
 import {
   IUser,
@@ -21,22 +21,6 @@ import {
 
 const CACHE_KEYS = {
   ALL_USERS: 'users:all',
-};
-
-// Function to generate Access Token
-const generateAccessToken = (user: IUser): string => {
-  return jwt.sign({ id: user._id, role: user.role }, env.JWT_SECRET, {
-    expiresIn: env.JWT_EXPIRATION,
-  });
-};
-
-// Function to generate Refresh Token
-const generateRefreshToken = (user: IUser): string => {
-  return jwt.sign(
-    { id: user._id, tokenType: 'refresh' }, //tokenType to differentiate
-    env.JWT_REFRESH_SECRET,
-    { expiresIn: env.JWT_REFRESH_EXPIRATION },
-  );
 };
 
 export const createUserService = (userRepo: UserRepository): UserService => {

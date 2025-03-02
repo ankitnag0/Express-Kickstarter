@@ -82,4 +82,5 @@ export type UserController = {
     req: Request<unknown, unknown, unknown, PaginationQuery>,
     res: Response,
   ): Promise<void>;
+  googleOAuthCallback(req: Request, res: Response): Promise<void>;
 };

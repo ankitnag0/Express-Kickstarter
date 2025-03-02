@@ -1,6 +1,9 @@
+import { UnauthorizedError } from '@lib/CustomError'; // Import UnauthorizedError if you are throwing custom errors
+import { generateAccessToken, generateRefreshToken } from '@utils/jwt-helpers'; // Import token helpers
 import { Request, Response } from 'express';
 
 import {
+  IUser,
   PaginationQuery,
   SignInData,
   SignUpData,
@@ -69,6 +72,26 @@ export const createUserController = (
         { users, page, limit, total },
         200,
         'Paginated users retrieved successfully.',
+      );
+    },
+
+    // Google OAuth callback handler
+    async googleOAuthCallback(req: Request, res: Response) {
+      const user = req.user as IUser; // Type assertion as googleAuth middleware should ensure user is present
+
+      if (!user) {
+        throw new UnauthorizedError('Google OAuth authentication failed.'); // Handle failure case
+      }
+
+      // Generate JWT access and refresh tokens for the Google-authenticated user
+      const accessToken = generateAccessToken(user); // Call generateAccessToken with user only
+      const refreshToken = generateRefreshToken(user); // Call generateRefreshToken with user only
+
+      // Respond with tokens and success message using res.success
+      res.success(
+        { accessToken, refreshToken },
+        200,
+        'Google login successful.',
       );
     },
   };

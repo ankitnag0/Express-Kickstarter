@@ -1,4 +1,6 @@
+// src/modules/user/user.router.ts
 import { jwtAuth } from '@config/passport'; // Import jwtAuth from passport config
+import { googleAuth } from '@config/passport'; // Import googleAuth
 import { rbacMiddleware } from '@middlewares/role-enforcer';
 import { validate } from '@middlewares/zod-validator';
 import { Router } from 'express';
@@ -50,6 +52,15 @@ router.get(
   rbacMiddleware([Role.ADMIN]),
   validate(paginationSchema, 'query'),
   userController.getPaginatedUsers,
+);
+
+// Google OAuth Routes (ADD THESE ROUTES)
+router.get('/auth/google', googleAuth()); // Route to initiate Google OAuth flow
+
+router.get(
+  '/auth/google/callback', // Google OAuth callback route
+  googleAuth(), // Use googleAuth middleware to handle callback
+  userController.googleOAuthCallback, // Handler to process successful Google login
 );
 
 export default router;
