@@ -1,3 +1,4 @@
+import { ParsedQs } from 'qs';
 import { z } from 'zod';
 
 import { Role } from './user.types';
@@ -28,6 +29,11 @@ export const updateRoleParamsSchema = z.object({
   }),
 });
 
+export const paginationSchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).default(10),
+});
+
 export type SignUpData = z.infer<typeof signUpSchema>;
 export type SignInData = z.infer<typeof signInSchema>;
 export type UpdateNameOrPasswordData = z.infer<
@@ -36,3 +42,5 @@ export type UpdateNameOrPasswordData = z.infer<
 
 export type UpdateRoleData = z.infer<typeof updateRoleSchema>;
 export type UpdateRoleParams = z.infer<typeof updateRoleParamsSchema>;
+
+export type PaginationQuery = z.infer<typeof paginationSchema> & ParsedQs;

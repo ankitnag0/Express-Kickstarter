@@ -4,6 +4,7 @@ import { validate } from '@middlewares/zod-validator';
 import { Router } from 'express';
 
 import {
+  paginationSchema,
   Role,
   signInSchema,
   signUpSchema,
@@ -42,6 +43,13 @@ router.get(
   authMiddleware,
   rbacMiddleware([Role.ADMIN]),
   userController.getAllUsers,
+);
+router.get(
+  '/paginated',
+  authMiddleware,
+  rbacMiddleware([Role.ADMIN]),
+  validate(paginationSchema, 'query'),
+  userController.getPaginatedUsers,
 );
 
 export default router;

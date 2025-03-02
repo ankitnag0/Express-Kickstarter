@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 
 import {
+  PaginationQuery,
   SignInData,
   SignUpData,
   UpdateNameOrPasswordData,
@@ -52,6 +53,20 @@ export const createUserController = (
     async getAllUsers(req: Request, res: Response) {
       const users = await userService.getAllUsers();
       res.success(users, 200, 'Users retrieved successfully.');
+    },
+
+    async getPaginatedUsers(
+      req: Request<unknown, unknown, unknown, PaginationQuery>,
+      res: Response,
+    ) {
+      const { page, limit } = req.query;
+      const { users, total } = await userService.getUsersPaginated(page, limit);
+
+      res.success(
+        { users, page, limit, total },
+        200,
+        'Paginated users retrieved successfully.',
+      );
     },
   };
 };

@@ -165,4 +165,88 @@ describe('User Feature E2E Tests', () => {
       );
     });
   });
+  // New tests for paginated users
+  describe('GET /api/user/paginated', () => {
+    it('should return paginated users with default parameters', async () => {
+      // Create some users for pagination
+      await request(app).post('/api/user/signup').send({
+        name: 'Paginated User 1',
+        email: 'paginated1@example.com',
+        password: 'password123',
+      });
+      await request(app).post('/api/user/signup').send({
+        name: 'Paginated User 2',
+        email: 'paginated2@example.com',
+        password: 'password123',
+      });
+
+      const adminToken = jwt.sign(
+        { id: 'admin', role: 'admin' },
+        env.JWT_SECRET,
+        { expiresIn: env.JWT_EXPIRATION },
+      );
+
+      const res = await request(app)
+        .get('/api/user/paginated')
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body).toMatchObject({
+        success: true,
+        status: 200,
+        message: 'Paginated users retrieved successfully.',
+      });
+      expect(res.body.data).toHaveProperty('page', 1);
+      expect(res.body.data).toHaveProperty('limit', 10);
+      expect(res.body.data).toHaveProperty('users');
+      expect(Array.isArray(res.body.data.users)).toBe(true);
+      expect(res.body.data).toHaveProperty('total');
+    });
+
+    it('should return paginated users with provided query parameters', async () => {
+      // Create several users for proper pagination testing
+      for (let i = 0; i < 15; i++) {
+        await request(app)
+          .post('/api/user/signup')
+          .send({
+            name: `Paginated User ${i}`,
+            email: `paginateduser${i}@example.com`,
+            password: 'password123',
+          });
+      }
+
+      const adminToken = jwt.sign(
+        { id: 'admin', role: 'admin' },
+        env.JWT_SECRET,
+        { expiresIn: env.JWT_EXPIRATION },
+      );
+
+      const res = await request(app)
+        .get('/api/user/paginated?page=2&limit=5')
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.data).toHaveProperty('page', 2);
+      expect(res.body.data).toHaveProperty('limit', 5);
+      expect(res.body.data).toHaveProperty('users');
+      expect(Array.isArray(res.body.data.users)).toBe(true);
+      expect(res.body.data.users.length).toBeLessThanOrEqual(5);
+    });
+
+    // it('should return a validation error for invalid query parameters', async () => {
+    //   const adminToken = jwt.sign(
+    //     { id: 'admin', role: 'admin' },
+    //     env.JWT_SECRET,
+    //     { expiresIn: env.JWT_EXPIRATION },
+    //   );
+    //
+    //   const res = await request(app)
+    //     .get('/api/user/paginated?page=0&limit=5')
+    //     .set('Authorization', `Bearer ${adminToken}`);
+    //
+    //   // Expect a validation error (HTTP 400)
+    //   expect(res.status).toBe(422);
+    //   expect(res.body).toHaveProperty('error');
+    // });
+  });
 });

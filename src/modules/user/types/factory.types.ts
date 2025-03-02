@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 
 import {
+  PaginationQuery,
   SignInData,
   SignUpData,
   UpdateNameOrPasswordData,
@@ -27,6 +28,14 @@ export type UserRepository = {
   findUserById(userId: Types.ObjectId): Promise<IUser | null>;
   findUserByEmail(email: string): Promise<IUser | null>;
   findAllUsers(): Promise<Pick<IUser, 'name' | 'email' | 'role'>[]>;
+
+  findUsersPaginated(
+    page: number,
+    limit: number,
+  ): Promise<{
+    users: Pick<IUser, 'name' | 'email' | 'role'>[];
+    total: number;
+  }>;
 };
 
 export type UserService = {
@@ -38,6 +47,14 @@ export type UserService = {
   ): Promise<IUser | null>;
   updateRole(userId: string, input: UpdateRoleInput): Promise<IUser | null>;
   getAllUsers(): Promise<Pick<IUser, 'name' | 'email' | 'role'>[]>;
+
+  getUsersPaginated(
+    page: number,
+    limit: number,
+  ): Promise<{
+    users: Pick<IUser, 'name' | 'email' | 'role'>[];
+    total: number;
+  }>;
 };
 
 export type UserController = {
@@ -58,4 +75,9 @@ export type UserController = {
     res: Response,
   ): Promise<void>;
   getAllUsers(req: Request, res: Response): Promise<void>;
+
+  getPaginatedUsers(
+    req: Request<unknown, unknown, unknown, PaginationQuery>,
+    res: Response,
+  ): Promise<void>;
 };

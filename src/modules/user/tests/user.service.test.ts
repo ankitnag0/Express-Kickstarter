@@ -48,6 +48,7 @@ describe('UserService', () => {
       createUser: jest.fn(),
       updateUserById: jest.fn(),
       findAllUsers: jest.fn(),
+      findUsersPaginated: jest.fn(),
     };
     userService = createUserService(mockUserRepo);
     jest.clearAllMocks();
@@ -300,6 +301,26 @@ describe('UserService', () => {
       expect(mockUserRepo.findAllUsers).toHaveBeenCalled();
       expect(cache.set).toHaveBeenCalledWith('users:all', users);
       expect(result).toEqual(users);
+    });
+  });
+  // New suite for paginated users in the service
+  describe('getUsersPaginated', () => {
+    it('should return paginated users with correct total count', async () => {
+      const users = [
+        { name: 'User1', email: 'user1@example.com', role: Role.USER },
+        { name: 'User2', email: 'user2@example.com', role: Role.USER },
+        { name: 'User3', email: 'user3@example.com', role: Role.USER },
+      ];
+
+      (mockUserRepo.findUsersPaginated as jest.Mock).mockResolvedValue({
+        users: [users[0]], // For page 1, limit 1
+        total: 3,
+      });
+
+      const result = await userService.getUsersPaginated(1, 1);
+      expect(result.users).toHaveLength(1);
+      expect(result.total).toBe(3);
+      expect(mockUserRepo.findUsersPaginated).toHaveBeenCalledWith(1, 1);
     });
   });
 });

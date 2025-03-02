@@ -59,6 +59,9 @@ importers:
       pino-pretty:
         specifier: ^13.0.0
         version: 13.0.0
+      qs:
+        specifier: ^6.14.0
+        version: 6.14.0
       uuid:
         specifier: ^11.0.5
         version: 11.0.5
@@ -105,6 +108,9 @@ importers:
       '@types/jsonwebtoken':
         specifier: ^9.0.8
         version: 9.0.8
+      '@types/qs':
+        specifier: ^6.9.18
+        version: 6.9.18
       '@types/supertest':
         specifier: ^6.0.2
         version: 6.0.2
@@ -2955,6 +2961,10 @@ packages:
 
   qs@6.13.0:
     resolution: {integrity: sha512-+38qI9SOr8tfZ4QmJNplMUxqjbe7LKvvZgWdExBOmd+egZTtjLB67Gu0HRX3u/XOq7UU2Nx6nsjvS16Z9uwfpg==}
+    engines: {node: '>=0.6'}
+
+  qs@6.14.0:
+    resolution: {integrity: sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==}
     engines: {node: '>=0.6'}
 
   queue-lit@1.5.2:
@@ -7198,6 +7208,10 @@ snapshots:
     dependencies:
       side-channel: 1.1.0
 
+  qs@6.14.0:
+    dependencies:
+      side-channel: 1.1.0
+
   queue-lit@1.5.2: {}
 
   queue-microtask@1.2.3: {}
@@ -7499,7 +7513,7 @@ snapshots:
       formidable: 3.5.2
       methods: 1.1.2
       mime: 2.6.0
-      qs: 6.13.0
+      qs: 6.14.0
     transitivePeerDependencies:
       - supports-color
 

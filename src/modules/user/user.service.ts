@@ -106,5 +106,15 @@ export const createUserService = (userRepo: UserRepository): UserService => {
       await cache.set(CACHE_KEYS.ALL_USERS, users);
       return users;
     },
+
+    async getUsersPaginated(
+      page: number,
+      limit: number,
+    ): Promise<{
+      users: Pick<IUser, 'name' | 'email' | 'role'>[];
+      total: number;
+    }> {
+      return await userRepo.findUsersPaginated(page, limit);
+    },
   };
 };

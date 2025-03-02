@@ -39,5 +39,20 @@ export const createUserRepository = (): UserRepository => {
     async findAllUsers(): Promise<Pick<IUser, 'name' | 'email' | 'role'>[]> {
       return await User.find({}, { name: 1, email: 1, role: 1, _id: 0 }).exec();
     },
+    async findUsersPaginated(
+      page: number,
+      limit: number,
+    ): Promise<{
+      users: Pick<IUser, 'name' | 'email' | 'role'>[];
+      total: number;
+    }> {
+      const skip = (page - 1) * limit;
+      const users = await User.find({}, { name: 1, email: 1, role: 1, _id: 0 })
+        .skip(skip)
+        .limit(limit)
+        .exec();
+      const total = await User.countDocuments();
+      return { users, total };
+    },
   };
 };
