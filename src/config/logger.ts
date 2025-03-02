@@ -1,7 +1,7 @@
 import { env } from '@config/env';
 import pino from 'pino';
 
-export const logger = pino({
+const baseLogger = pino({
   level: (env.NODE_ENV ?? 'development') === 'production' ? 'info' : 'debug',
   redact: {
     paths: ['req.headers.authorization', 'req.body.password', 'req.body.token'],
@@ -19,3 +19,9 @@ export const logger = pino({
         },
       }),
 });
+
+// Set default level to 'warn' for test environment to reduce verbosity
+const testLevel = 'warn';
+
+export const logger =
+  env.NODE_ENV === 'test' ? pino({ level: testLevel }) : baseLogger;
